@@ -1,7 +1,12 @@
+//A. Groeling - 9/20/20
+#ifndef SPLITSTRING_H
+#define SPLITSTRING_H
+
 #include <string>
 #include <algorithm>
 #include <iterator>
  
+// small utility to help parse strings
 template <class Container>
 void splitString(const std::string& str, Container& cont,
               const std::string& delims = " ")
@@ -15,3 +20,5 @@ void splitString(const std::string& str, Container& cont,
     }
     cont.push_back(str.substr(previous, current - previous));
 }
+
+#endif

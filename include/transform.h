@@ -6,19 +6,16 @@
 #include "Eigen/Geometry"
 #include <cmath>
 
-Matrix4f identity4f()
+// returns 4x4 identity matrix
+static Matrix4f identity4f()
 {
-    Matrix4f out = Matrix4f::Zero(); 
+    Matrix4f out; 
     out.setIdentity();
     return out;
 }
 
-void identity4f(Matrix4f &in)
-{
-    in.setIdentity();
-}
-
-Matrix4f rotate(float x, float y, float z, float theta)
+// returns 4x4 rotation matrix given axis-angle rotation
+static Matrix4f rotate(float x, float y, float z, float theta)
 {
     Matrix4f m;
     Vector3f axis(x, y, z);
@@ -34,7 +31,8 @@ Matrix4f rotate(float x, float y, float z, float theta)
     return m;
 }
 
-Matrix4f translate(float x, float y, float z)
+// returns 4x4 translation matrix
+static Matrix4f translate(float x, float y, float z)
 {
     Matrix4f m;
     m.setIdentity();
@@ -45,7 +43,8 @@ Matrix4f translate(float x, float y, float z)
     return m;
 }
 
-Matrix4f scale(float x, float y, float z)
+// returns 4x4 scaling matrix
+static Matrix4f scale(float x, float y, float z)
 {
     Matrix4f m;
     m << x, 0, 0, 0,
@@ -55,4 +54,5 @@ Matrix4f scale(float x, float y, float z)
 
     return m;
 }
+
 #endif
