@@ -7,6 +7,7 @@ add_compile_options(-std=c++20 -Wall -Wextra)
 add_compile_options(-Wpedantic -Wfatal-errors)
 add_compile_options(-g -ggdb -O3)
 add_compile_options(-lm -Ilib -Iinclude)
+add_compile_options(-v)
 
 add_executable(render src/render.cpp)
 

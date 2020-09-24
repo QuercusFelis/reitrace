@@ -47,7 +47,7 @@ class model
 {
   private:
     bool smooth;
-    Matrix4Xd vertices;
+    MatrixXd vertices;
     vector<double> vertexNormals;
     vector<line> lines;
     vector<face> faces;
@@ -55,7 +55,7 @@ class model
   public:
     model();
 
-    model(Matrix4Xd verts, vector<double> vns, vector<line> edges, vector<face> sides, bool smoothShaded)
+    model(MatrixXd verts, vector<double> vns, vector<line> edges, vector<face> sides, bool smoothShaded)
     {
         vertices = verts;
         vertexNormals = vns;
@@ -70,7 +70,7 @@ class model
         vertices = transform * vertices.transpose();
     }
 
-    void setVertices(Matrix4Xd verts)
+    void setVertices(MatrixXd verts)
     {
         vertices = verts;
     }
@@ -95,7 +95,7 @@ class model
         smooth = smoothShaded;
     }
 
-    const Matrix4Xd getVertices()
+    const MatrixXd getVertices()
     {
         return vertices;
     }

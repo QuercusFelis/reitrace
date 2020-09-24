@@ -4,7 +4,6 @@
 
 #include "splitString.h"
 #include "model.h"
-#include <iostream>
 #include <fstream>
 #include <vector>
 
@@ -16,8 +15,7 @@ static model modelConstruct(string &fileName)
     ifstream file(fileName);
     model out = model();
 
-    vector<double[4]> vertices;
-    Matrix4Xd verticesOut;
+    vector<vector<double>> vertices;
     vector<line> lines;
     vector<face> faces;
 
@@ -31,9 +29,14 @@ static model modelConstruct(string &fileName)
         // if it's a vertex
         if(tokens.front().compare("v") == 0)
         {
-            // and iterate through, converting them to doubless collecting the vertex
-            double coords[4] = {stod(tokens.at(1)), stod(tokens.at(2)), stod(tokens.at(3)),1};
-            vertices.push_back(coords);
+            // and iterate through, converting tokens to doubles to build a vertex
+            vector<double> vert;
+            vert.push_back(stod(tokens.at(1)));
+            vert.push_back(stod(tokens.at(2)));
+            vert.push_back(stod(tokens.at(3)));
+            vert.push_back((double)1);
+
+            vertices.push_back(vert);
         }
         // if it's a face
         else if(tokens.front().compare("f") == 0)
@@ -71,14 +74,14 @@ static model modelConstruct(string &fileName)
     // done parsing file
 
     // initialize dynamic matrix to known size and fill
-    verticesOut = Matrix4Xd(vertices.size());
+    MatrixXd verticesOut(4,(int)vertices.size());
     int i = 0;
-    for(double* v : vertices)
+    for(vector<double> v : vertices)
     {
-        verticesOut(0,i) = v[0];
-        verticesOut(1,i) = v[1];
-        verticesOut(2,i) = v[2];
-        verticesOut(3,i) = v[3];
+        verticesOut(0,i) = v.at(0);
+        verticesOut(1,i) = v.at(1);
+        verticesOut(2,i) = v.at(2);
+        verticesOut(3,i) = v.at(3);
 
         i++;
     }
@@ -97,7 +100,7 @@ static void modelDeconstruct(string &fileName, model &output)
     ofstream file(fileName);
 
     //retrieve data
-    const Matrix4Xd vertices = output.getVertices();
+    const MatrixXd vertices = output.getVertices();
     const vector<line> *lines = output.getLines();
     const vector<face> *faces = output.getFaces();
 

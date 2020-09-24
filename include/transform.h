@@ -26,7 +26,7 @@ static Matrix4d rotate(double x, double y, double z, double theta)
    
     // make homogenous rotation matrix
     m.setIdentity();
-    m.block<3,3>(0,0) = (Matrix4d)Eigen::AngleAxisf(theta, axis);
+    m.block<3,3>(0,0) = Eigen::AngleAxisd(theta, axis).toRotationMatrix();
 
     return m;
 }
