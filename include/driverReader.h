@@ -39,14 +39,20 @@ class driverReader
         string op;
 
         // if there are more lines to retrieve, do so
-        if(!eof && getline(file, op))
+        if(getline(file, op))
         {
-            splitString(op, out);
-            // trim off unecessary information
-            if(!out.front().compare("trans"))
-                out.erase(out.begin());
+            if(op != "")
+            {
+                splitString(op, out);
+                // trim off unecessary information
+                if(!out.front().compare("trans"))
+                    out.erase(out.begin());
+                // ignore comments
+                else if(out.front().find("#") != string::npos)
+                    out = getOp();
+            }
+            else eof = true;
         }
-        else eof = true;
 
         // returns null if you have reached the end
         return out;
