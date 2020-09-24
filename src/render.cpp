@@ -55,7 +55,9 @@ int main(int argc, char **argv)
         else if(!op.front().compare("load"))
         {
             models.push_back(modelConstruct(op.at(1)));
+            MatrixXd temp = models.back().getVertices();
             models.back().applyTransform(M);
+            gradedOutput("transform_new.txt",M , temp, models.back().getVertices());
         }
         else if(!op.front().compare("save"))
         {

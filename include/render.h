@@ -5,5 +5,6 @@
 #include "driverReader.h"
 #include "objHandler.h"
 #include "transform.h"
+#include "gradedOutput.h"
 
 #endif
