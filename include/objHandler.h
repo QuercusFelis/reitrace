@@ -16,8 +16,8 @@ static model modelConstruct(string &fileName)
     ifstream file(fileName);
     model out = model();
 
-    vector<float[4]> vertices;
-    Matrix4Xf verticesOut;
+    vector<double[4]> vertices;
+    Matrix4Xd verticesOut;
     vector<line> lines;
     vector<face> faces;
 
@@ -31,10 +31,9 @@ static model modelConstruct(string &fileName)
         // if it's a vertex
         if(tokens.front().compare("v") == 0)
         {
-            // and iterate through, converting them to floats collecting the vertex
-            vertices.push_back(
-                {stof(tokens.at(1)),stof(tokens.at(2)),stof(tokens.at(3)),1}
-            );
+            // and iterate through, converting them to doubless collecting the vertex
+            double coords[4] = {stod(tokens.at(1)), stod(tokens.at(2)), stod(tokens.at(3)),1};
+            vertices.push_back(coords);
         }
         // if it's a face
         else if(tokens.front().compare("f") == 0)
@@ -43,7 +42,7 @@ static model modelConstruct(string &fileName)
             vector<string> ftokens[3];
             for(int i = 0; i<3; i++)
             {
-                splitString(tokens.at(i+1), ftokens[i], "/");
+                splitString(tokens.at(i+1), ftokens[i], '/');
             }
 
             // fetch the data and pack into arrays
@@ -72,9 +71,9 @@ static model modelConstruct(string &fileName)
     // done parsing file
 
     // initialize dynamic matrix to known size and fill
-    verticesOut = Matrix4Xf(vertices.size());
+    verticesOut = Matrix4Xd(vertices.size());
     int i = 0;
-    for(float* v : vertices)
+    for(double* v : vertices)
     {
         verticesOut(0,i) = v[0];
         verticesOut(1,i) = v[1];
@@ -98,7 +97,7 @@ static void modelDeconstruct(string &fileName, model &output)
     ofstream file(fileName);
 
     //retrieve data
-    const Matrix4Xf vertices = output.getVertices();
+    const Matrix4Xd vertices = output.getVertices();
     const vector<line> *lines = output.getLines();
     const vector<face> *faces = output.getFaces();
 

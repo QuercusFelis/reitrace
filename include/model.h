@@ -47,30 +47,37 @@ class model
 {
   private:
     bool smooth;
-    Matrix4Xf vertices;
+    Matrix4Xd vertices;
+    vector<double> vertexNormals;
     vector<line> lines;
     vector<face> faces;
 
   public:
     model();
 
-    model(Matrix4Xf verts, vector<line> edges, vector<face> sides, bool smoothShaded)
+    model(Matrix4Xd verts, vector<double> vns, vector<line> edges, vector<face> sides, bool smoothShaded)
     {
         vertices = verts;
+        vertexNormals = vns;
         lines = edges;
         faces = sides;
         smooth = smoothShaded;
     }
 
     // apply a given 4x4 transfrom to the set of vertices
-    void applyTransform(Matrix4f transform)
+    void applyTransform(Matrix4d transform)
     {
         vertices = transform * vertices.transpose();
     }
 
-    void setVertices(Matrix4Xf verts)
+    void setVertices(Matrix4Xd verts)
     {
         vertices = verts;
+    }
+
+    void setVertexNormals(vector<double> vns)
+    {
+        vertexNormals = vns;
     }
 
     void setLines(vector<line> edges)
@@ -88,9 +95,14 @@ class model
         smooth = smoothShaded;
     }
 
-    const Matrix4Xf getVertices()
+    const Matrix4Xd getVertices()
     {
         return vertices;
+    }
+
+    const vector<double>* getVertexNormals()
+    {
+        return &vertexNormals;
     }
 
     const vector<line>* getLines()

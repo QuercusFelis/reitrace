@@ -3,22 +3,20 @@
 #define SPLITSTRING_H
 
 #include <string>
-#include <algorithm>
-#include <iterator>
+#include <vector>
+#include <sstream>
+#include <iostream>
  
 // small utility to help parse strings
-template <class Container>
-void splitString(const std::string& str, Container& cont,
-              const std::string& delims = " ")
+void splitString(const std::string& str, std::vector<std::string>& cont,
+              const char delim = ' ')
 {
-    std::size_t current, previous = 0;
-    current = str.find_first_of(delims);
-    while (current != std::string::npos) {
-        cont.push_back(str.substr(previous, current - previous));
-        previous = current + 1;
-        current = str.find_first_of(delims, previous);
+    std::string token;
+    std::istringstream tokenStream(str); 
+    while(std::getline(tokenStream, token, delim))
+    {
+        cont.push_back(token);
     }
-    cont.push_back(str.substr(previous, current - previous));
 }
 
 #endif

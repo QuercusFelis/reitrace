@@ -2,16 +2,16 @@
 #ifndef LINALG_H
 #define LINALG_H
 
-#include "Eigen/Core"
+#include "lib/Eigen/Core"
 
 //data types for homogeneous calculations
-typedef Eigen::Matrix<float, 4, 4> Matrix4f;
-typedef Eigen::Matrix<float, 4, 1> Vector4f;
-typedef Eigen::Matrix<float, 4, Eigen::Dynamic> Matrix4Xf;
+typedef Eigen::Matrix<double, 4, 4> Matrix4d;
+typedef Eigen::Matrix<double, 4, 1> Vector4d;
+typedef Eigen::Matrix<double, 4, Eigen::Dynamic> Matrix4Xd;
 
 //datatypes for cartesian calculations
-typedef Eigen::Matrix<float, 3, 3> Matrix3f;
-typedef Eigen::Matrix<float, 3, 1> Vector3f;
-typedef Eigen::Matrix<float, 3, Eigen::Dynamic> Matrix3Xf;
+typedef Eigen::Matrix<double, 3, 3> Matrix3d;
+typedef Eigen::Matrix<double, 3, 1> Vector3d;
+typedef Eigen::Matrix<double, 3, Eigen::Dynamic> Matrix3Xd;
 
 #endif

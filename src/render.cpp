@@ -1,9 +1,9 @@
 //A. Groeling - 9/20/20
-#include "render.h"
+#include "include/render.h"
 #include <cstdio>
 #include <string>
 
-Matrix4f M;
+Matrix4d M;
 vector<model> models;
 
 int main(int argc, char **argv)
@@ -20,8 +20,8 @@ int main(int argc, char **argv)
 
     // parse driver file
     vector<string> op;
-    vector<float> params;
-    driverReader dr = driverReader(argv[1]);
+    vector<double> params;
+    driverReader dr(argv[1]);
     while(!dr.getEOF())
     {
         // get next instruction
@@ -35,7 +35,7 @@ int main(int argc, char **argv)
           && op.front().compare("save") != 0)
             for(size_t i = 1; i < op.size(); i++)
             {
-                params.push_back(stoi(op.at(i)));
+                params.push_back(stod(op.at(i)));
             }
 
         // operation handlers
