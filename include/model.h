@@ -53,7 +53,7 @@ class model
     vector<face> faces;
 
   public:
-    model();
+    model(){}
 
     model(MatrixXd verts, vector<double> vns, vector<line> edges, vector<face> sides, bool smoothShaded)
     {
