@@ -13,7 +13,7 @@ using namespace std;
 static model modelConstruct(string &fileName)
 {
     ifstream file(fileName);
-    model out = model();
+    model out;
 
     vector<vector<double>> vertices;
     vector<line> lines;
