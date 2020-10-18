@@ -9,6 +9,6 @@ add_compile_options(-g -ggdb -O3)
 add_compile_options(-lm -Ilib -Iinclude)
 add_compile_options(-v)
 
-add_executable(render src/render.cpp)
+add_executable(render src/hw2.cpp)
 
-add_custom_target(hw1_groeling.tar ALL COMMAND tar cf hw1_groeling.tar src include lib CMakeLists.txt)
+add_custom_target(hw2_groeling.tar ALL COMMAND tar cf hw2_groeling.tar src include lib CMakeLists.txt README.md)

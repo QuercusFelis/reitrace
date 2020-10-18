@@ -3,9 +3,8 @@
 #define model_H
 
 #include "linAlg.h"
+#include <iostream>
 #include <vector>
-
-using namespace std;
 
 class line
 {
@@ -47,16 +46,16 @@ class model
 {
   private:
     bool smooth;
-    string header;
+    std::string header;
     MatrixXd vertices;
-    vector<double> vertexNormals;
-    vector<line> lines;
-    vector<face> faces;
+    std::vector<double> vertexNormals;
+    std::vector<line> lines;
+    std::vector<face> faces;
 
   public:
     model(){}
 
-    model(MatrixXd verts, vector<double> vns, vector<line> edges, vector<face> sides, bool smoothShaded)
+    model(MatrixXd verts, std::vector<double> vns, std::vector<line> edges, std::vector<face> sides, bool smoothShaded)
     {
         vertices = verts;
         vertexNormals = vns;
@@ -68,14 +67,11 @@ class model
     // apply a given 4x4 transfrom to the set of vertices
     void applyTransform(Matrix4d transform)
     {
-        cout << "Applying Transform to model\n";
-        cout << "M =\n" << transform << "\n\n";
-        cout << "V =\n" << vertices << "\n\n";
-        vertices = transform * vertices;//.transpose();
-        cout << "Result =\n" << vertices << "\n";
+        std::cout << "Applying Transform: \n" << transform << "\n\n";
+        vertices = transform * vertices;
     }
 
-    void setHeader(const string& head)
+    void setHeader(const std::string& head)
     {
         header = head;
     }
@@ -85,17 +81,17 @@ class model
         vertices = verts;
     }
 
-    void setVertexNormals(vector<double> vns)
+    void setVertexNormals(std::vector<double> vns)
     {
         vertexNormals = vns;
     }
 
-    void setLines(vector<line> edges)
+    void setLines(std::vector<line> edges)
     {
         lines = edges;
     }
 
-    void setFaces(vector<face> sides)
+    void setFaces(std::vector<face> sides)
     {
         faces = sides;
     }
@@ -105,7 +101,7 @@ class model
         smooth = smoothShaded;
     }
 
-    const string* getHeader()
+    const std::string* getHeader()
     {
         return &header;
     }
@@ -115,17 +111,17 @@ class model
         return vertices;
     }
 
-    const vector<double>* getVertexNormals()
+    const std::vector<double>* getVertexNormals()
     {
         return &vertexNormals;
     }
 
-    const vector<line>* getLines()
+    const std::vector<line>* getLines()
     {
         return &lines;
     }
 
-    const vector<face>* getFaces()
+    const std::vector<face>* getFaces()
     {
         return &faces;
     }

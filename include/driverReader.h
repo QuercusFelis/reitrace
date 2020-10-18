@@ -6,24 +6,22 @@
 #include <fstream>
 #include <vector>
 
-using namespace std;
-
 class driverReader
 {
   private:
     bool eof;
-    ifstream file;
+    std::ifstream file;
 
   public:
-    driverReader(string fileName)
+    driverReader(std::string fileName)
     {
-        file = ifstream(fileName);
+        file = std::ifstream(fileName);
         if(file.is_open()) eof = false;
     }
 
     driverReader(char *fileName)
     {
-        file = ifstream(fileName);
+        file = std::ifstream(fileName);
         if(file.is_open()) eof = false;
     }
 
@@ -33,10 +31,10 @@ class driverReader
     }
 
     // retrieves the next operation listed in the driver
-    vector<string> getOp()
+    std::vector<std::string> getOp()
     {
-        vector<string> out;
-        string op;
+        std::vector<std::string> out;
+        std::string op;
 
         // if there are more lines to retrieve, do so
         if(getline(file, op))
@@ -44,11 +42,11 @@ class driverReader
             if(op != "")
             {
                 splitString(op, out);
-                // trim off unecessary information
+                // trim off redundant "trans"
                 if(!out.front().compare("trans"))
                     out.erase(out.begin());
                 // ignore comments
-                else if(out.front().find("#") != string::npos)
+                else if(out.front().find("#") != std::string::npos)
                     out = getOp();
             }
             else eof = true;

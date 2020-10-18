@@ -17,7 +17,8 @@ static Matrix4d identity4f()
 // returns 4x4 rotation matrix given axis-angle rotation
 static Matrix4d rotate(double x, double y, double z, double theta)
 {
-    Matrix4d m;
+    Matrix4d Out;
+    Matrix3d R;
     Vector3d axis(x, y, z);
 
     axis.normalize();
@@ -25,10 +26,10 @@ static Matrix4d rotate(double x, double y, double z, double theta)
     theta = M_PI * theta/180;
    
     // make homogenous rotation matrix
-    m.setIdentity();
-    m.block<3,3>(0,0) = Eigen::AngleAxisd(theta, axis).toRotationMatrix();
-
-    return m;
+    Out.setIdentity();
+    R = Eigen::AngleAxisd(theta, axis).toRotationMatrix();
+    Out.block<3,3>(0,0) = R;
+    return Out;
 }
 
 // returns 4x4 translation matrix

@@ -32,11 +32,9 @@
 *.app
 
 # Additional Ingores
-render
-drivers
-solutions
+archive
 .ycm_extra_conf.py
-CMakeCache.txt
 CMakeFiles/
 cmake_install.cmake
 compile_commands.json
+*.txt

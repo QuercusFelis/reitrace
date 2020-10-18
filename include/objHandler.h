@@ -7,31 +7,29 @@
 #include <fstream>
 #include <vector>
 
-using namespace std;
-
 // Constructs a model from a given obj file
-static model modelConstruct(string &fileName)
+static model modelConstruct(std::string &fileName)
 {
-    cout << "Opening " << fileName << "\n";
+    std::cout << "Opening " << fileName << "\n";
     //TODO: catch if file doesn't open
-    ifstream file(fileName);
+    std::ifstream file(fileName);
     model out;
 
-    string header = "";
-    vector<vector<double>> vertices;
-    vector<line> lines;
-    vector<face> faces;
+    std::string header = "";
+    std::vector<std::vector<double>> vertices;
+    std::vector<line> lines;
+    std::vector<face> faces;
 
     // parse file
-    string newline;
-    vector<string> tokens;
+    std::string newline;
+    std::vector<std::string> tokens;
     while(getline(file, newline))
     {
         // split each line for easier parsing
         tokens.clear();
         splitString(newline, tokens);
 
-        if(tokens.front().find("#") != string::npos)
+        if(tokens.front().find("#") != std::string::npos)
         {
             header += newline + "\n";
         }
@@ -39,7 +37,7 @@ static model modelConstruct(string &fileName)
         else if(!tokens.front().compare("v"))
         {
             // and iterate through, converting tokens to doubles to build a vertex
-            vector<double> vert;
+            std::vector<double> vert;
             vert.push_back(stod(tokens.at(1)));
             vert.push_back(stod(tokens.at(2)));
             vert.push_back(stod(tokens.at(3)));
@@ -51,7 +49,7 @@ static model modelConstruct(string &fileName)
         else if(!tokens.front().compare("f"))
         {
             // split the substrings to isolate integers
-            vector<string> ftokens[3];
+            std::vector<std::string> ftokens[3];
             for(int i = 0; i<3; i++)
             {
                 splitString(tokens.at(i+1), ftokens[i], '/');
@@ -95,7 +93,7 @@ static model modelConstruct(string &fileName)
     // initialize dynamic matrix to known size and fill
     MatrixXd verticesOut(4,(int)vertices.size());
     int i = 0;
-    for(vector<double> v : vertices)
+    for(std::vector<double> v : vertices)
     {
         verticesOut(0,i) = v.at(0);
         verticesOut(1,i) = v.at(1);
@@ -115,14 +113,14 @@ static model modelConstruct(string &fileName)
 }
 
 //saves a model to a given location
-static void modelDeconstruct(string &fileName, model &output)
+static void modelDeconstruct(std::string &fileName, model &output)
 {
-    ofstream file(fileName);
+    std::ofstream file(fileName);
 
     //retrieve data
     const MatrixXd vertices = output.getVertices();
-    const vector<line> *lines = output.getLines();
-    const vector<face> *faces = output.getFaces();
+    const std::vector<line> *lines = output.getLines();
+    const std::vector<face> *faces = output.getFaces();
 
     //write to file, section by section
     file << *output.getHeader();
