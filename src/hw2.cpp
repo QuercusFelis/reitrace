@@ -46,19 +46,23 @@ int main(int argc, char **argv)
         // operation handlers
         if(!op.front().compare("light"))
         {
-            scene.lights.push_back(Light());
-            scene.lights.end()->coords = Vector4d(params.at(0), params.at(1), params.at(2), 1);
-            scene.lights.end()->emittance[0] = params.at(3);
-            scene.lights.end()->emittance[1] = params.at(4);
-            scene.lights.end()->emittance[2] = params.at(5);
-            scene.lights.end()->alpha = params.at(6);
+            Light light = { Vector3d(params.at(0), params.at(1), params.at(2)),
+                    {params.at(3), params.at(4), params.at(5)},
+                    params.at(6)};
+            scene.lights.push_back(light);
         }
         else if(!op.front().compare("sphere"))
-            scene.spheres.push_back(Sphere(params.at(0), params.at(1), params.at(2), params.at(3), 
-                        params.at(4), params.at(5), params.at(6), 
-                        params.at(7), params.at(8), params.at(9), 
-                        params.at(10), params.at(11), params.at(12),
-                        params.at(13)));
+        {
+            Material m = {
+                {params.at(4), params.at(5), params.at(6)},
+                {params.at(7), params.at(8), params.at(9)},
+                {params.at(10), params.at(11), params.at(12)},
+                params.at(13)
+            };
+            scene.materials.push_back(m);
+            scene.spheres.push_back(Sphere(params.at(0), params.at(1), params.at(2),
+                        params.at(3), &scene.materials.back()));
+        }
         else if(!op.front().compare("camera"))
             camera = Camera(params.at(0), params.at(1), params.at(2), 
                     params.at(3), params.at(4), params.at(5),

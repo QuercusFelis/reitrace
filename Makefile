@@ -155,32 +155,32 @@ render/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/render.dir/build.make CMakeFiles/render.dir/build
 .PHONY : render/fast
 
-src/hw1.o: src/hw1.cpp.o
+src/hw2.o: src/hw2.cpp.o
 
-.PHONY : src/hw1.o
+.PHONY : src/hw2.o
 
 # target to build an object file
-src/hw1.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/render.dir/build.make CMakeFiles/render.dir/src/hw1.cpp.o
-.PHONY : src/hw1.cpp.o
+src/hw2.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/render.dir/build.make CMakeFiles/render.dir/src/hw2.cpp.o
+.PHONY : src/hw2.cpp.o
 
-src/hw1.i: src/hw1.cpp.i
+src/hw2.i: src/hw2.cpp.i
 
-.PHONY : src/hw1.i
+.PHONY : src/hw2.i
 
 # target to preprocess a source file
-src/hw1.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/render.dir/build.make CMakeFiles/render.dir/src/hw1.cpp.i
-.PHONY : src/hw1.cpp.i
+src/hw2.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/render.dir/build.make CMakeFiles/render.dir/src/hw2.cpp.i
+.PHONY : src/hw2.cpp.i
 
-src/hw1.s: src/hw1.cpp.s
+src/hw2.s: src/hw2.cpp.s
 
-.PHONY : src/hw1.s
+.PHONY : src/hw2.s
 
 # target to generate assembly for a file
-src/hw1.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/render.dir/build.make CMakeFiles/render.dir/src/hw1.cpp.s
-.PHONY : src/hw1.cpp.s
+src/hw2.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/render.dir/build.make CMakeFiles/render.dir/src/hw2.cpp.s
+.PHONY : src/hw2.cpp.s
 
 # Help Target
 help:
@@ -192,9 +192,9 @@ help:
 	@echo "... rebuild_cache"
 	@echo "... hw2_groeling.tar"
 	@echo "... render"
-	@echo "... src/hw1.o"
-	@echo "... src/hw1.i"
-	@echo "... src/hw1.s"
+	@echo "... src/hw2.o"
+	@echo "... src/hw2.i"
+	@echo "... src/hw2.s"
 .PHONY : help
 
 

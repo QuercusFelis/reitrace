@@ -11,13 +11,13 @@
 class Camera
 {
     private:
-    Vector4d eye;
-    Vector4d look;
-    Vector4d up;
+    Vector3d eye;
+    Vector3d look;
+    Vector3d up;
 
-    Vector4d U;
-    Vector4d V;
-    Vector4d W;
+    Vector3d U;
+    Vector3d V;
+    Vector3d W;
 
     //clipping plane position in camera coord
     double nearPlane;
@@ -28,6 +28,12 @@ class Camera
         double bottom;
     } bounds;
 
+    struct RGB {
+        double r;
+        double g;
+        double b;
+    };
+
     public:
     Camera(){}
 
@@ -36,9 +42,9 @@ class Camera
            double uX, double uY, double uZ,
            double a)
     {
-        eye = Vector4d(eX, eY, eZ, 1);
-        look = Vector4d(lX, lY, lZ, 1);
-        up = Vector4d(uX, uY, uZ, 1);
+        eye = Vector3d(eX, eY, eZ);
+        look = Vector3d(lX, lY, lZ);
+        up = Vector3d(uX, uY, uZ);
 
         W = (eye - look).normalized();
         U = up.cross(W).normalized();
@@ -55,57 +61,53 @@ class Camera
         int width = image->getWidth();
         int height = image->getHeight();
 
-        double *rgb;
-        Ray ray;
         for(int i = 0; i < height; i++)
         {
             for(int j = 0; j < width; j++)
             {
+                static Ray ray = Ray();
                 pixelInit(&ray, scene, j, i, width, height);
-                rgb = calcLight(scene, &ray);
+                static RGB rgb = calcLight(scene, &ray);
 
-                r[i*height+j] = rgb[0];
-                g[i*height+j] = rgb[1];
-                b[i*height+j] = rgb[2];
-
-                ray.reset();
+                r[i*height+j] = rgb.r;
+                g[i*height+j] = rgb.g;
+                b[i*height+j] = rgb.b;
             }
         }
 
         return image;
     }
 
-    double* calcLight(Scene *scene, Ray *ray)
+    RGB calcLight(Scene *scene, Ray *ray)
     {
-        static double rgb[] = {0.0, 0.0, 0.0};
+        static RGB rgb = {0.0, 0.0, 0.0};
         if(!ray->intersects())
             return rgb;
 
         Material *material = ray->getBestSphere()->getMaterial();
-        for(int i = 0; i < 3; i++)
-        {
-            rgb[i] += material->ambient[i] * scene->ambientLight[i];
-        }
-        Vector4d normal = (*ray->getBestPoint() - *ray->getBestSphere()->getCenterpoint()).normalized();
+        rgb.r += material->ambient[0] * scene->ambientLight[0];
+        rgb.g += material->ambient[1] * scene->ambientLight[1];
+        rgb.b += material->ambient[2] * scene->ambientLight[2];
+        Vector3d normal = (*ray->getBestPoint() - *ray->getBestSphere()->getCenterpoint()).normalized();
         for(Light lt:scene->lights)
         {
-            static Vector4d toLt = lt.coords - ray->getBestPoint()->normalized();
+            static Vector3d toLt = lt.coords - ray->getBestPoint()->normalized();
             double NdotL = normal.dot(toLt);
             if(NdotL > 0)
             {
-               for(int i = 0; i < 3; i++)
-               {
-                   rgb[i] += material->diffuse[i] * lt.emittance[i] * NdotL;
-               }
+               rgb.r += material->diffuse[0] * lt.emittance[0] * NdotL;
+               rgb.g += material->diffuse[1] * lt.emittance[1] * NdotL;
+               rgb.b += material->diffuse[2] * lt.emittance[2] * NdotL;
                 
-               Vector4d toC = (*ray->getStart() - *ray->getBestPoint()).normalized();
-               Vector4d spR = ((2 * NdotL * normal) - toLt).normalized();
+               Vector3d toC = (*ray->getStart() - *ray->getBestPoint()).normalized();
+               Vector3d spR = ((2 * NdotL * normal) - toLt).normalized();
                double CdotR = toC.dot(spR);
                if(CdotR > 0)
-                for(int i = 0; i < 3; i++)
-                {
-                       rgb[i] += material->specular[i] * lt.emittance[i] * pow(CdotR, material->alpha);
-                };
+               {
+                   rgb.r += material->specular[0] * lt.emittance[0] * pow(CdotR, material->alpha);
+                   rgb.r += material->specular[1] * lt.emittance[1] * pow(CdotR, material->alpha);
+                   rgb.r += material->specular[2] * lt.emittance[2] * pow(CdotR, material->alpha);
+               }
             }
         }
 
@@ -116,8 +118,8 @@ class Camera
     {
         double pX = x/(imgW-1)*(bounds.right-bounds.left)+bounds.left;
         double pY= y/(imgH-1)*(bounds.bottom-bounds.top)+bounds.top;
-        Vector4d start = eye + (nearPlane * W) + (pX * U) + (pY * V);
-        Vector4d direction = start - eye;
+        Vector3d start = eye + (nearPlane * W) + (pX * U) + (pY * V);
+        Vector3d direction = start - eye;
 
         ray->setStart(start);
         ray->setDirection(direction);

@@ -8,26 +8,33 @@
 class Ray
 {
     private:
-    Vector4d start;
-    Vector4d direction;
+    Vector3d start;
+    Vector3d direction;
 
-    double bestTValue = INFINITY;
+    bool intersection;
+    double bestTValue;
     Sphere *bestSphere;
-    Vector4d bestPoint;
+    Vector3d bestPoint;
 
     public:
-    Ray(){}
+    Ray()
+    {
+        Ray(Vector3d(0,0,0), Vector3d(0,0,0));
+    }
 
-    Ray(Vector4d s, Vector4d d)
+    Ray(Vector3d s, Vector3d d)
     {
         start = s;
         direction = d;
+        intersection = false;
+        bestTValue = INFINITY;
+        bestSphere = NULL;
+        bestPoint = Vector3d(0,0,0);
     }
     
-    bool sphereTest(Sphere *sphere)
+    void sphereTest(Sphere *sphere)
     {
-        bool intersects = false;
-        Vector4d Tvect = (*sphere->getCenterpoint() - start);
+        Vector3d Tvect = (*sphere->getCenterpoint() - start);
         double v = Tvect.dot(direction);
         double cSquared = Tvect.dot(Tvect);
         double dSquared = pow(*sphere->getRadius(), 2) - (cSquared - pow(v,2));
@@ -37,26 +44,27 @@ class Ray
             double tValue = v - sqrt(dSquared);
             if(tValue < bestTValue && tValue > .0000001)
             {
+                intersection = true;
                 bestTValue = tValue;
                 bestSphere = sphere;
                 bestPoint = start + tValue * direction;
             }
         }
-        return intersects;
     }
 
     void reset()
     {
         bestTValue = INFINITY;
+        intersection = false;
         bestSphere = NULL;
     }
 
     bool intersects()
     {
-        return bestSphere != NULL;
+        return intersection;
     }
 
-    Vector4d* getBestPoint()
+    Vector3d* getBestPoint()
     {
         if(intersects())
             return &bestPoint;
@@ -68,22 +76,22 @@ class Ray
         return bestSphere;
     }
 
-    Vector4d* getStart()
+    Vector3d* getStart()
     {
         return &start;
     }
     
-    Vector4d* getDirection()
+    Vector3d* getDirection()
     {
         return &direction;
     }
 
-    void setStart(Vector4d s)
+    void setStart(Vector3d s)
     {
         start = s;
     }
     
-    void setDirection(Vector4d d)
+    void setDirection(Vector3d d)
     {
         direction = d;
     }

@@ -6,7 +6,7 @@
 
 struct Light
 {
-    Vector4d coords;
+    Vector3d coords;
     double emittance[3];
     double alpha;
 };
