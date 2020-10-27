@@ -28,12 +28,6 @@ class Camera
         double bottom;
     } bounds;
 
-    struct RGB {
-        double r;
-        double g;
-        double b;
-    };
-
     public:
     Camera(){}
 
@@ -55,59 +49,58 @@ class Camera
 
     Image* renderImage(Image *image, Scene *scene)
     {
-        double *r = image->getR();
-        double *g = image->getG();
-        double *b = image->getB();
         int width = image->getWidth();
         int height = image->getHeight();
 
-        for(int i = 0; i < height; i++)
+        for(int x = 0; x < width; x++)
         {
-            for(int j = 0; j < width; j++)
+            for(int y = 0; y < height; y++)
             {
-                static Ray ray = Ray();
-                pixelInit(&ray, scene, j, i, width, height);
-                static RGB rgb = calcLight(scene, &ray);
+                Pixel pixel = {0.0,0.0,0.0};
+                Ray ray = Ray();
+                pixelInit(&ray, scene, x, y, width, height);
+                pixel = calcLight(scene, &ray);
 
-                r[i*height+j] = rgb.r;
-                g[i*height+j] = rgb.g;
-                b[i*height+j] = rgb.b;
+                image->setPixel(x, y, pixel);
             }
         }
 
         return image;
     }
 
-    RGB calcLight(Scene *scene, Ray *ray)
+    Pixel calcLight(Scene *scene, Ray *ray)
     {
-        static RGB rgb = {0.0, 0.0, 0.0};
+        Pixel rgb = {0.0, 0.0, 0.0};
+
         if(!ray->intersects())
             return rgb;
 
-        Material *material = ray->getBestSphere()->getMaterial();
-        rgb.r += material->ambient[0] * scene->ambientLight[0];
-        rgb.g += material->ambient[1] * scene->ambientLight[1];
-        rgb.b += material->ambient[2] * scene->ambientLight[2];
+        Material material = ray->getBestSphere()->getMaterial();
+        rgb.r += material.ambient[0] * scene->ambientLight[0];
+        rgb.g += material.ambient[1] * scene->ambientLight[1];
+        rgb.b += material.ambient[2] * scene->ambientLight[2];
         Vector3d normal = (*ray->getBestPoint() - *ray->getBestSphere()->getCenterpoint()).normalized();
-        for(Light lt:scene->lights)
+        for(size_t i = 0; i < scene->lights.size(); i++)
         {
-            static Vector3d toLt = lt.coords - ray->getBestPoint()->normalized();
+            Light lt = scene->lights.at(i);
+            Vector3d toLt = (lt.coords - *ray->getBestPoint()).normalized();
             double NdotL = normal.dot(toLt);
             if(NdotL > 0)
             {
-               rgb.r += material->diffuse[0] * lt.emittance[0] * NdotL;
-               rgb.g += material->diffuse[1] * lt.emittance[1] * NdotL;
-               rgb.b += material->diffuse[2] * lt.emittance[2] * NdotL;
-                
+               rgb.r += material.diffuse[0] * lt.emittance[0] * NdotL;
+               rgb.g += material.diffuse[1] * lt.emittance[1] * NdotL;
+               rgb.b += material.diffuse[2] * lt.emittance[2] * NdotL;
+#if 1
                Vector3d toC = (*ray->getStart() - *ray->getBestPoint()).normalized();
                Vector3d spR = ((2 * NdotL * normal) - toLt).normalized();
                double CdotR = toC.dot(spR);
                if(CdotR > 0)
                {
-                   rgb.r += material->specular[0] * lt.emittance[0] * pow(CdotR, material->alpha);
-                   rgb.r += material->specular[1] * lt.emittance[1] * pow(CdotR, material->alpha);
-                   rgb.r += material->specular[2] * lt.emittance[2] * pow(CdotR, material->alpha);
+                   rgb.r += material.specular[0] * lt.emittance[0] * pow(CdotR, material.alpha);
+                   rgb.g += material.specular[1] * lt.emittance[1] * pow(CdotR, material.alpha);
+                   rgb.b += material.specular[2] * lt.emittance[2] * pow(CdotR, material.alpha);
                }
+#endif
             }
         }
 
@@ -116,10 +109,10 @@ class Camera
 
     void pixelInit(Ray *ray, Scene *scene, int x, int y, int imgW, int imgH)
     {
-        double pX = x/(imgW-1)*(bounds.right-bounds.left)+bounds.left;
-        double pY= y/(imgH-1)*(bounds.bottom-bounds.top)+bounds.top;
+        double pX = ((double)x)/(imgW-1)*(bounds.right-bounds.left)+bounds.left;
+        double pY = ((double)y)/(imgH-1)*(bounds.bottom-bounds.top)+bounds.top;
         Vector3d start = eye + (nearPlane * W) + (pX * U) + (pY * V);
-        Vector3d direction = start - eye;
+        Vector3d direction = (start - eye).normalized();
 
         ray->setStart(start);
         ray->setDirection(direction);

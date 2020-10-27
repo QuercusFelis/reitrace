@@ -2,9 +2,16 @@
 #ifndef IMAGE_H
 #define IMAGE_H
 
+#include <vector>
 #include <string>
 #include <iostream>
 #include <fstream>
+
+struct Pixel{
+    double r;
+    double g;
+    double b;
+};
 
 class Image
 {
@@ -14,9 +21,7 @@ class Image
     int height;
 
     // pixel value arrays
-    double *r;
-    double *g;
-    double *b;
+    std::vector<Pixel> pixels;
 
     public:
     Image(){}
@@ -26,18 +31,8 @@ class Image
         width = w;
         height = h;
 
-        int pixels = w * h;
-
-        r = new double[pixels];
-        g = new double[pixels];
-        b = new double[pixels];
-    }
-
-    ~Image()
-    {
-        delete[]r;
-        delete[]g;
-        delete[]b;
+        int numPixels = w * h;
+        pixels = std::vector<Pixel>(numPixels);
     }
 
     bool toPPM(std::string fileName)
@@ -49,18 +44,20 @@ class Image
         // cap all values at 1
         for(int i = 0; i < width*height; i++)
         {
-            if(r[i] > 1)
-                r[i] = 1;
-            if(g[i] > 1)
-                g[i] = 1;
-            if(b[i] > 1)
-                b[i] = 1;
+            if(pixels[i].r > 1)
+                pixels[i].r = 1;
+            if(pixels[i].g > 1)
+                pixels[i].g = 1;
+            if(pixels[i].b > 1)
+                pixels[i].b = 1;
         }
 
         // write to file
         for(int i = 0; i < width*height; i++)
         {
-            file << (int)(255*r[i]) << " " << (int)(255*g[i]) << " " << (int)(255*b[i]) << " ";
+            file << (int)(255*pixels[i].r) << " " 
+                 << (int)(255*pixels[i].g) << " " 
+                 << (int)(255*pixels[i].b) << " ";
             if(!width%(i+1))
                 file << "\n";
         }
@@ -77,19 +74,9 @@ class Image
         return height;
     }
 
-    double* getR()
+    void setPixel(int x, int y, Pixel pixel)
     {
-        return r;
-    }
-
-    double* getG()
-    {
-        return g;
-    }
-
-    double* getB()
-    {
-        return b;
+        pixels.at(y*width+x) = pixel;
     }
 };
 

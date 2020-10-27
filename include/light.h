@@ -8,7 +8,6 @@ struct Light
 {
     Vector3d coords;
     double emittance[3];
-    double alpha;
 };
 
 #endif

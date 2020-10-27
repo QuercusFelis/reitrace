@@ -9,12 +9,12 @@
 class Sphere
 {
     private: 
-    Material *material;
+    Material material;
     Vector3d centerpoint;
     double radius;
 
     public:
-    Sphere(double x, double y, double z, double r, Material *m)
+    Sphere(double x, double y, double z, double r, Material m)
     {
         centerpoint = Vector3d(x, y, z);
         radius = r;
@@ -31,7 +31,7 @@ class Sphere
         return &radius;
     }
 
-    Material* getMaterial()
+    Material getMaterial()
     {
         return material;
     }

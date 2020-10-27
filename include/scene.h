@@ -12,7 +12,6 @@ struct Scene
 {
     double ambientLight[3] = {0.5, 0.5, 0.5};
     std::vector<Light> lights;
-    std::vector<Material> materials;
     std::vector<Sphere> spheres;
     std::vector<Model> models;
 };

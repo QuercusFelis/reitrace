@@ -47,8 +47,7 @@ int main(int argc, char **argv)
         if(!op.front().compare("light"))
         {
             Light light = { Vector3d(params.at(0), params.at(1), params.at(2)),
-                    {params.at(3), params.at(4), params.at(5)},
-                    params.at(6)};
+                    {params.at(4), params.at(5), params.at(6)}};
             scene.lights.push_back(light);
         }
         else if(!op.front().compare("sphere"))
@@ -57,11 +56,9 @@ int main(int argc, char **argv)
                 {params.at(4), params.at(5), params.at(6)},
                 {params.at(7), params.at(8), params.at(9)},
                 {params.at(10), params.at(11), params.at(12)},
-                params.at(13)
-            };
-            scene.materials.push_back(m);
+                params.at(13)};
             scene.spheres.push_back(Sphere(params.at(0), params.at(1), params.at(2),
-                        params.at(3), &scene.materials.back()));
+                        params.at(3), m));
         }
         else if(!op.front().compare("camera"))
             camera = Camera(params.at(0), params.at(1), params.at(2), 

@@ -11,7 +11,6 @@ class Ray
     Vector3d start;
     Vector3d direction;
 
-    bool intersection;
     double bestTValue;
     Sphere *bestSphere;
     Vector3d bestPoint;
@@ -19,49 +18,37 @@ class Ray
     public:
     Ray()
     {
-        Ray(Vector3d(0,0,0), Vector3d(0,0,0));
-    }
-
-    Ray(Vector3d s, Vector3d d)
-    {
-        start = s;
-        direction = d;
-        intersection = false;
-        bestTValue = INFINITY;
+        start = Vector3d(0,0,0);
+        direction = Vector3d(0,0,0);
+        bestTValue = 999999999999;
         bestSphere = NULL;
         bestPoint = Vector3d(0,0,0);
     }
     
-    void sphereTest(Sphere *sphere)
+    double sphereTest(Sphere *sphere)
     {
         Vector3d Tvect = (*sphere->getCenterpoint() - start);
         double v = Tvect.dot(direction);
         double cSquared = Tvect.dot(Tvect);
         double dSquared = pow(*sphere->getRadius(), 2) - (cSquared - pow(v,2));
 
-        if(dSquared < 0)
+        if(dSquared > 0)
         {
             double tValue = v - sqrt(dSquared);
-            if(tValue < bestTValue && tValue > .0000001)
+            if(tValue < bestTValue && tValue > 0.00001)
             {
-                intersection = true;
                 bestTValue = tValue;
                 bestSphere = sphere;
                 bestPoint = start + tValue * direction;
             }
         }
-    }
 
-    void reset()
-    {
-        bestTValue = INFINITY;
-        intersection = false;
-        bestSphere = NULL;
+        return dSquared;
     }
 
     bool intersects()
     {
-        return intersection;
+        return bestSphere != NULL;
     }
 
     Vector3d* getBestPoint()
