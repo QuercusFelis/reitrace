@@ -1,38 +1,38 @@
 //A. Groeling - 9/20/20
-#ifndef model_H
-#define model_H
+#ifndef MODEL_H
+#define MODEL_H
 
 #include "linAlg.h"
 #include <iostream>
 #include <vector>
 
-class line
+class Line
 {
   public:
     int vertices[2];
 
-    line(int vert0, int vert1)
+    Line(int vert0, int vert1)
     {
         vertices[0] = vert0;
         vertices[1] = vert1;
     }
 };
 
-class face
+class Face
 {
   public:
     int vertices[3];
     int textures[3] = {-1,-1,-1};
     int normals[3];
 
-    face(int verts[3], int texts[3], int norms[3])
+    Face(int verts[3], int texts[3], int norms[3])
     {
-        face(verts, norms);
+        Face(verts, norms);
         for(int i = 0; i<3; i++)
             textures[i] = (int)texts[i];
     }
 
-    face(int verts[3], int norms[3])
+    Face(int verts[3], int norms[3])
     {
         for(int i = 0; i<3; i++)
         {
@@ -42,20 +42,20 @@ class face
     }
 };
 
-class model
+class Model
 {
   private:
     bool smooth;
     std::string header;
     MatrixXd vertices;
     std::vector<double> vertexNormals;
-    std::vector<line> lines;
-    std::vector<face> faces;
+    std::vector<Line> lines;
+    std::vector<Face> faces;
 
   public:
-    model(){}
+    Model(){}
 
-    model(MatrixXd verts, std::vector<double> vns, std::vector<line> edges, std::vector<face> sides, bool smoothShaded)
+    Model(MatrixXd verts, std::vector<double> vns, std::vector<Line> edges, std::vector<Face> sides, bool smoothShaded)
     {
         vertices = verts;
         vertexNormals = vns;
@@ -86,12 +86,12 @@ class model
         vertexNormals = vns;
     }
 
-    void setLines(std::vector<line> edges)
+    void setLines(std::vector<Line> edges)
     {
         lines = edges;
     }
 
-    void setFaces(std::vector<face> sides)
+    void setFaces(std::vector<Face> sides)
     {
         faces = sides;
     }
@@ -116,12 +116,12 @@ class model
         return &vertexNormals;
     }
 
-    const std::vector<line>* getLines()
+    const std::vector<Line>* getLines()
     {
         return &lines;
     }
 
-    const std::vector<face>* getFaces()
+    const std::vector<Face>* getFaces()
     {
         return &faces;
     }

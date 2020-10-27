@@ -3,7 +3,6 @@
 #define TRANSFORM_H
 
 #include "linAlg.h"
-#include "lib/Eigen/Geometry"
 #include <cmath>
 
 // returns 4x4 identity matrix

@@ -3,6 +3,7 @@
 #define LINALG_H
 
 #include "lib/Eigen/Core"
+#include "lib/Eigen/Geometry"
 
 //data types for homogeneous calculations
 typedef Eigen::Matrix<double, 4, 4> Matrix4d;
