@@ -130,57 +130,57 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named hw2_groeling.tar
+# Target rules for targets named hw3_groeling.tar
 
 # Build rule for target.
-hw2_groeling.tar: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 hw2_groeling.tar
-.PHONY : hw2_groeling.tar
+hw3_groeling.tar: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 hw3_groeling.tar
+.PHONY : hw3_groeling.tar
 
 # fast build rule for target.
-hw2_groeling.tar/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/hw2_groeling.tar.dir/build.make CMakeFiles/hw2_groeling.tar.dir/build
-.PHONY : hw2_groeling.tar/fast
+hw3_groeling.tar/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/hw3_groeling.tar.dir/build.make CMakeFiles/hw3_groeling.tar.dir/build
+.PHONY : hw3_groeling.tar/fast
 
 #=============================================================================
-# Target rules for targets named render
+# Target rules for targets named raytracer
 
 # Build rule for target.
-render: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 render
-.PHONY : render
+raytracer: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 raytracer
+.PHONY : raytracer
 
 # fast build rule for target.
-render/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/render.dir/build.make CMakeFiles/render.dir/build
-.PHONY : render/fast
+raytracer/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/raytracer.dir/build.make CMakeFiles/raytracer.dir/build
+.PHONY : raytracer/fast
 
-src/hw2.o: src/hw2.cpp.o
+src/hw3.o: src/hw3.cpp.o
 
-.PHONY : src/hw2.o
+.PHONY : src/hw3.o
 
 # target to build an object file
-src/hw2.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/render.dir/build.make CMakeFiles/render.dir/src/hw2.cpp.o
-.PHONY : src/hw2.cpp.o
+src/hw3.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/raytracer.dir/build.make CMakeFiles/raytracer.dir/src/hw3.cpp.o
+.PHONY : src/hw3.cpp.o
 
-src/hw2.i: src/hw2.cpp.i
+src/hw3.i: src/hw3.cpp.i
 
-.PHONY : src/hw2.i
+.PHONY : src/hw3.i
 
 # target to preprocess a source file
-src/hw2.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/render.dir/build.make CMakeFiles/render.dir/src/hw2.cpp.i
-.PHONY : src/hw2.cpp.i
+src/hw3.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/raytracer.dir/build.make CMakeFiles/raytracer.dir/src/hw3.cpp.i
+.PHONY : src/hw3.cpp.i
 
-src/hw2.s: src/hw2.cpp.s
+src/hw3.s: src/hw3.cpp.s
 
-.PHONY : src/hw2.s
+.PHONY : src/hw3.s
 
 # target to generate assembly for a file
-src/hw2.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/render.dir/build.make CMakeFiles/render.dir/src/hw2.cpp.s
-.PHONY : src/hw2.cpp.s
+src/hw3.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/raytracer.dir/build.make CMakeFiles/raytracer.dir/src/hw3.cpp.s
+.PHONY : src/hw3.cpp.s
 
 # Help Target
 help:
@@ -190,11 +190,11 @@ help:
 	@echo "... depend"
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
-	@echo "... hw2_groeling.tar"
-	@echo "... render"
-	@echo "... src/hw2.o"
-	@echo "... src/hw2.i"
-	@echo "... src/hw2.s"
+	@echo "... hw3_groeling.tar"
+	@echo "... raytracer"
+	@echo "... src/hw3.o"
+	@echo "... src/hw3.i"
+	@echo "... src/hw3.s"
 .PHONY : help
 
 

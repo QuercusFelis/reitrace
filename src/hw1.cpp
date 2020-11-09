@@ -7,7 +7,7 @@
 #include "transform.h"
 
 Matrix4d M;
-std::vector<model> models;
+std::vector<Model> models;
 int modelCount = 0;
 
 int main(int argc, char **argv)

@@ -10,6 +10,7 @@
 
 struct Scene
 {
+    int recursionDepth = 1;
     double ambientLight[3] = {0.5, 0.5, 0.5};
     std::vector<Light> lights;
     std::vector<Sphere> spheres;

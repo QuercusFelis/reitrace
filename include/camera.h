@@ -75,11 +75,23 @@ class Camera
         if(!ray->intersects())
             return rgb;
 
-        Material material = ray->getBestSphere()->getMaterial();
+        int objType = ray->getObjType();
+        void *object = ray->getBestObject();
+        Material material;
+        Vector3d normal;
+        if(objType == SPHERE)
+        {
+            material = ((Sphere *)object)->getMaterial();
+            normal = ((Sphere *)object)->getNormal(*ray->getBestPoint());
+        }
+        if(objType == MODEL)
+        {
+            material = ((Model *)object)->getMaterial();
+            normal = ((Model *)object)->getNormal(ray->getFace());
+        }
         rgb.r += material.ambient[0] * scene->ambientLight[0];
         rgb.g += material.ambient[1] * scene->ambientLight[1];
         rgb.b += material.ambient[2] * scene->ambientLight[2];
-        Vector3d normal = (*ray->getBestPoint() - *ray->getBestSphere()->getCenterpoint()).normalized();
         for(size_t i = 0; i < scene->lights.size(); i++)
         {
             Light lt = scene->lights.at(i);
@@ -90,7 +102,6 @@ class Camera
                rgb.r += material.diffuse[0] * lt.emittance[0] * NdotL;
                rgb.g += material.diffuse[1] * lt.emittance[1] * NdotL;
                rgb.b += material.diffuse[2] * lt.emittance[2] * NdotL;
-#if 1
                Vector3d toC = (*ray->getStart() - *ray->getBestPoint()).normalized();
                Vector3d spR = ((2 * NdotL * normal) - toLt).normalized();
                double CdotR = toC.dot(spR);
@@ -100,7 +111,6 @@ class Camera
                    rgb.g += material.specular[1] * lt.emittance[1] * pow(CdotR, material.alpha);
                    rgb.b += material.specular[2] * lt.emittance[2] * pow(CdotR, material.alpha);
                }
-#endif
             }
         }
 
@@ -120,6 +130,10 @@ class Camera
         for(size_t i = 0; i < scene->spheres.size(); i++)
         {
             ray->sphereTest(&scene->spheres[i]);
+        }
+        for(size_t i = 0; i < scene->models.size(); i++)
+        {
+            ray->modelTest(&scene->models[i]);
         }
     }
 

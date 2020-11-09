@@ -8,17 +8,17 @@
 #include <vector>
 
 // Constructs a model from a given obj file
-static model modelConstruct(std::string &fileName)
+static Model modelConstruct(std::string &fileName)
 {
     std::cout << "Opening " << fileName << "\n";
     //TODO: catch if file doesn't open
     std::ifstream file(fileName);
-    model out;
+    Model out;
 
     std::string header = "";
     std::vector<std::vector<double>> vertices;
-    std::vector<line> lines;
-    std::vector<face> faces;
+    std::vector<Line> lines;
+    std::vector<Face> faces;
 
     // parse file
     std::string newline;
@@ -50,33 +50,44 @@ static model modelConstruct(std::string &fileName)
         {
             // split the substrings to isolate integers
             std::vector<std::string> ftokens[3];
+            int verts[3];
+            int texts[3] = {0, 0, 0};
+            int norms[3] = {0, 0, 0};
+
+            // determine how face is defined in .obj
+            std::string format = "//";
+            if(tokens.at(1).find('/') == std::string::npos)
+                format = "";
+            else if(tokens.at(1).find('/') == tokens.at(1).rfind('/'))
+                format = "/";
+
+            // splitstring each parameter for easier handling
             for(int i = 0; i<3; i++)
             {
-                splitString(tokens.at(i+1), ftokens[i], '/');
+                if(format.compare(""))
+                    splitString(tokens.at(i+1), ftokens[i], '/');
+                else
+                    ftokens[i] = std::vector<std::string>({tokens[i+1]});
             }
 
-            // fetch the data and pack into arrays
-            int verts[3];// = {stoi(ftokens[0].at(0)), stoi(ftokens[1].at(0)), stoi(ftokens[2].at(0))};
-            int texts[3];// = {0, 0, 0};
-            int norms[3];// = {stoi(ftokens[0].at(2)), stoi(ftokens[1].at(2)), stoi(ftokens[2].at(2))};
+            // conditionally pack into arrays
             for(int i = 0; i<3; i++)
             {
-                if(ftokens[i].at(0) != "")
-                    verts[i] = std::stoi(ftokens[i].at(0));
-                if(ftokens[i].at(1) != "")
+                verts[i] = std::stoi(ftokens[i].at(0));
+                if(!format.compare("/") || ftokens[i].at(0).size() == 3)
                     texts[i] = std::stoi(ftokens[i].at(1));
-                if(ftokens[i].at(2) != "")
-                    norms[i] = std::stoi(ftokens[i].at(2));
+                else if(!format.compare("//"))
+                    norms[i] = std::stoi(ftokens[i].back());
             }
             
             //add to faces
-            faces.push_back(face(verts, norms));
+            faces.push_back(Face(verts, norms));
         }
         // if it's a line
         else if(!tokens.front().compare("l"))
         {
             // fetch line data and add to lines
-            lines.push_back(line(stoi(tokens.at(1)), stoi(tokens.at(2))));
+            lines.push_back(Line(stoi(tokens.at(1)), stoi(tokens.at(2))));
         }
         // if it has smoothing defined
         else if(!tokens.front().compare("s"))
@@ -103,24 +114,32 @@ static model modelConstruct(std::string &fileName)
         i++;
     }
 
+    Material m = {
+        {0.5, 0.5, 0.5},
+        {0.5, 0.5, 0.5},
+        {0.5, 0.5, 0.5},
+        {0.5, 0.5, 0.5},
+        16.0};
+
     // finish the model and return
     out.setHeader(header);
     out.setVertices(verticesOut);
     out.setFaces(faces);
     out.setLines(lines);
+    out.setMaterial(m);
     
     return out;
 }
 
 //saves a model to a given location
-static void modelDeconstruct(std::string &fileName, model &output)
+static void modelDeconstruct(std::string &fileName, Model &output)
 {
     std::ofstream file(fileName);
 
     //retrieve data
-    const MatrixXd vertices = output.getVertices();
-    const std::vector<line> *lines = output.getLines();
-    const std::vector<face> *faces = output.getFaces();
+    const MatrixXd vertices = *output.getVertices();
+    const std::vector<Line> *lines = output.getLines();
+    const std::vector<Face> *faces = output.getFaces();
 
     //write to file, section by section
     file << *output.getHeader();
@@ -132,19 +151,19 @@ static void modelDeconstruct(std::string &fileName, model &output)
         file << "s on\n";
     else
         file << "s off\n";
-    for(line l:*lines)
+    for(Line l:*lines)
     {
         file << "l " << l.vertices[0] << " " << l.vertices[1] << "\n";
     }
-    for(face f:*faces)
+    for(Face f:*faces)
     {
         file << "f ";
         for(int j = 0; j < 3; j++)
         {
-            file << f.vertices[j] << "/"; 
-            if(f.textures[j] != -1)
-                file << f.textures[j];
-            file << "/" << f.normals[j] << " ";
+            file << f.getVertIndex(j) << "/"; 
+            if(f.getTextureIndex(j) != -1)
+                file << f.getTextureIndex(j);
+            file << "/" << f.getNormalIndex(j) << " ";
         }
         file << "\n";
     }
