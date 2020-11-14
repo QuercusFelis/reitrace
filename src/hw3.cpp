@@ -52,7 +52,7 @@ int main(int argc, char **argv)
         }
         else if(!op.front().compare("sphere"))
         {
-            Material m = {
+            Material m = { "sphere",
                 {params.at(4), params.at(5), params.at(6)},
                 {params.at(7), params.at(8), params.at(9)},
                 {params.at(10), params.at(11), params.at(12)},
