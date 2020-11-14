@@ -22,25 +22,37 @@ class Line
 class Face
 {
   private:
+    Material *material;
     int vertices[3];
     int textures[3] = {-1,-1,-1};
     int normals[3];
 
   public:
-    Face(int verts[3], int texts[3], int norms[3])
+    Face(Material *m, int verts[3], int texts[3], int norms[3])
     {
-        Face(verts, norms);
+        Face(m, verts, norms);
         for(int i = 0; i<3; i++)
             textures[i] = (int)texts[i]-1;
     }
 
-    Face(int verts[3], int norms[3])
+    Face(Material *m, int verts[3], int norms[3])
     {
+        material = m;
         for(int i = 0; i<3; i++)
         {
             vertices[i] = (int)verts[i]-1;
             normals[i] = (int)norms[i]-1;
         }
+    }
+
+    void setMaterial(Material *m)
+    {
+        material = m;
+    }
+
+    Material* getMaterial()
+    {
+        return material;
     }
 
     Vector3d getA(MatrixXd *verts)
@@ -87,24 +99,23 @@ class Model
 {
   private:
     bool smooth;
+    std::vector<Material> materials;
     std::string header;
     MatrixXd vertices;
     std::vector<double> vertexNormals;
     std::vector<Line> lines;
     std::vector<Face> faces;
-    Material material;
 
   public:
     Model(){}
 
-    Model(MatrixXd verts, std::vector<double> vns, std::vector<Line> edges, std::vector<Face> sides, bool smoothShaded, Material m)
+    Model(MatrixXd verts, std::vector<double> vns, std::vector<Line> edges, std::vector<Face> sides, bool smoothShaded)
     {
         vertices = verts;
         vertexNormals = vns;
         lines = edges;
         faces = sides;
         smooth = smoothShaded;
-        material = m;
     }
 
     // apply a given 4x4 transfrom to the set of vertices
@@ -117,6 +128,25 @@ class Model
     Vector3d getNormal(Face *f)
     {
         return (f->getA(&vertices) - f->getB(&vertices)).cross(f->getA(&vertices) - f->getC(&vertices));
+    }
+
+    Material* getMaterial(std::string name)
+    {
+        Material *out = NULL;
+        for(size_t i = 0; i < materials.size(); i++)
+        {
+            if(!materials.at(i).name.compare(name))
+            {
+                out = &materials.at(i);
+            }
+        }
+
+        return out;
+    }
+
+    void setMaterials(std::vector<Material> m)
+    {
+        materials = m;
     }
 
     void setHeader(const std::string& head)
@@ -149,11 +179,6 @@ class Model
         smooth = smoothShaded;
     }
 
-    void setMaterial(Material m)
-    {
-        material = m;
-    }
-
     std::string* getHeader()
     {
         return &header;
@@ -177,11 +202,6 @@ class Model
     std::vector<Face>* getFaces()
     {
         return &faces;
-    }
-
-    Material getMaterial()
-    {
-        return material;
     }
 
     bool isSmooth()

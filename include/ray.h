@@ -32,6 +32,16 @@ class Ray
         bestPoint = Vector3d(0,0,0);
     }
     
+    Ray(Vector3d L, Vector3d D)
+    {
+        start = L;
+        direction = D;
+        bestTValue = INFINITY;
+        bestObject = NULL;
+        bestFace = NULL;
+        bestPoint = Vector3d(0,0,0);
+    }
+
     double sphereTest(Sphere *sphere)
     {
         Vector3d Tvect = (*sphere->getCenterpoint() - start);

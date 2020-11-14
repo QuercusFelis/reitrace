@@ -3,7 +3,6 @@
 
 #include <vector>
 
-#include "material.h"
 #include "light.h"
 #include "sphere.h"
 #include "model.h"
@@ -15,6 +14,7 @@ struct Scene
     std::vector<Light> lights;
     std::vector<Sphere> spheres;
     std::vector<Model> models;
+    std::vector<Material> materials;
 };
 
 #endif

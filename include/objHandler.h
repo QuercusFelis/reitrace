@@ -4,6 +4,7 @@
 
 #include "splitString.h"
 #include "model.h"
+#include "mtlHandler.h"
 #include <fstream>
 #include <vector>
 
@@ -19,6 +20,7 @@ static Model modelConstruct(std::string &fileName)
     std::vector<std::vector<double>> vertices;
     std::vector<Line> lines;
     std::vector<Face> faces;
+    Material *activeMaterial = NULL;
 
     // parse file
     std::string newline;
@@ -33,6 +35,10 @@ static Model modelConstruct(std::string &fileName)
         {
             header += newline + "\n";
         }
+        else if(!tokens.front().compare("mttlib"))
+        {
+            out.setMaterials(materialConstruct(tokens.at(1)));
+        }
         // if it's a vertex
         else if(!tokens.front().compare("v"))
         {
@@ -44,6 +50,11 @@ static Model modelConstruct(std::string &fileName)
             vert.push_back((double)1);
 
             vertices.push_back(vert);
+        }
+        // set activeMaterial pointer
+        else if(!tokens.front().compare("usemtl"))
+        {
+            activeMaterial = out.getMaterial(tokens.at(1));
         }
         // if it's a face
         else if(!tokens.front().compare("f"))
@@ -81,7 +92,7 @@ static Model modelConstruct(std::string &fileName)
             }
             
             //add to faces
-            faces.push_back(Face(verts, norms));
+            faces.push_back(Face(activeMaterial, verts, norms));
         }
         // if it's a line
         else if(!tokens.front().compare("l"))
@@ -114,19 +125,12 @@ static Model modelConstruct(std::string &fileName)
         i++;
     }
 
-    Material m = {
-        {0.5, 0.5, 0.5},
-        {0.5, 0.5, 0.5},
-        {0.5, 0.5, 0.5},
-        {0.5, 0.5, 0.5},
-        16.0};
-
+    Material m; 
     // finish the model and return
     out.setHeader(header);
     out.setVertices(verticesOut);
     out.setFaces(faces);
     out.setLines(lines);
-    out.setMaterial(m);
     
     return out;
 }

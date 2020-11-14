@@ -36,9 +36,9 @@ class Sphere
         return &radius;
     }
 
-    Material getMaterial()
+    Material *getMaterial()
     {
-        return material;
+        return &material;
     }
 };
 

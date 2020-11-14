@@ -76,6 +76,8 @@ int main(int argc, char **argv)
             scene.ambientLight[1] = params.at(1);
             scene.ambientLight[2] = params.at(2);
         }
+        else if(!op.front().compare("recursionlevel"))
+            scene.recursionDepth = params.at(0);
         // poly-model handling
         else if(!op.front().compare("clear"))
             M.setIdentity();

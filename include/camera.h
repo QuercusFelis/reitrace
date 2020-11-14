@@ -59,7 +59,7 @@ class Camera
                 Pixel pixel = {0.0,0.0,0.0};
                 Ray ray = Ray();
                 pixelInit(&ray, scene, x, y, width, height);
-                pixel = calcLight(scene, &ray);
+                pixel = calcLight(scene, &ray, scene->recursionDepth);
 
                 image->setPixel(x, y, pixel);
             }
@@ -68,7 +68,8 @@ class Camera
         return image;
     }
 
-    Pixel calcLight(Scene *scene, Ray *ray)
+    Pixel calcLight(Scene *scene, Ray *ray, int level, 
+            double rAttenuate = 1, double gAttenuate = 1, double bAttenuate = 1)
     {
         Pixel rgb = {0.0, 0.0, 0.0};
 
@@ -77,7 +78,7 @@ class Camera
 
         int objType = ray->getObjType();
         void *object = ray->getBestObject();
-        Material material;
+        Material *material;
         Vector3d normal;
         if(objType == SPHERE)
         {
@@ -86,12 +87,12 @@ class Camera
         }
         if(objType == MODEL)
         {
-            material = ((Model *)object)->getMaterial();
+            material = ray->getFace()->getMaterial();
             normal = ((Model *)object)->getNormal(ray->getFace());
         }
-        rgb.r += material.ambient[0] * scene->ambientLight[0];
-        rgb.g += material.ambient[1] * scene->ambientLight[1];
-        rgb.b += material.ambient[2] * scene->ambientLight[2];
+        rgb.r += material->ambient[0] * scene->ambientLight[0];
+        rgb.g += material->ambient[1] * scene->ambientLight[1];
+        rgb.b += material->ambient[2] * scene->ambientLight[2];
         for(size_t i = 0; i < scene->lights.size(); i++)
         {
             Light lt = scene->lights.at(i);
@@ -99,20 +100,39 @@ class Camera
             double NdotL = normal.dot(toLt);
             if(NdotL > 0)
             {
-               rgb.r += material.diffuse[0] * lt.emittance[0] * NdotL;
-               rgb.g += material.diffuse[1] * lt.emittance[1] * NdotL;
-               rgb.b += material.diffuse[2] * lt.emittance[2] * NdotL;
+               rgb.r += material->diffuse[0] * lt.emittance[0] * NdotL;
+               rgb.g += material->diffuse[1] * lt.emittance[1] * NdotL;
+               rgb.b += material->diffuse[2] * lt.emittance[2] * NdotL;
                Vector3d toC = (*ray->getStart() - *ray->getBestPoint()).normalized();
                Vector3d spR = ((2 * NdotL * normal) - toLt).normalized();
                double CdotR = toC.dot(spR);
                if(CdotR > 0)
                {
-                   rgb.r += material.specular[0] * lt.emittance[0] * pow(CdotR, material.alpha);
-                   rgb.g += material.specular[1] * lt.emittance[1] * pow(CdotR, material.alpha);
-                   rgb.b += material.specular[2] * lt.emittance[2] * pow(CdotR, material.alpha);
+                   rgb.r += material->specular[0] * lt.emittance[0] * pow(CdotR, material->alpha);
+                   rgb.g += material->specular[1] * lt.emittance[1] * pow(CdotR, material->alpha);
+                   rgb.b += material->specular[2] * lt.emittance[2] * pow(CdotR, material->alpha);
                }
             }
         }
+        if(level > 0)
+        {
+            Pixel rgbR;
+            Vector3d Uinv = -1 * *ray->getDirection();
+            Ray reflectionRay(*ray->getBestPoint(), ((2 * normal.dot(Uinv) * normal) - Uinv).normalized());
+            raySceneTest(&reflectionRay, scene);
+            if(material->illumModel == 2)
+                rgbR = calcLight(scene, &reflectionRay, level-1, 
+                        material->attenuation[0], material->attenuation[1], material->attenuation[2]);
+            else //illumModel must = 3, therefore Kr = Ks
+                rgbR = calcLight(scene, &reflectionRay, level-1, 
+                        material->specular[0], material->specular[1], material->specular[2]);
+            rgb.r += rgbR.r;
+            rgb.g += rgbR.g;
+            rgb.b += rgbR.b;
+        }
+        rgb.r *= rAttenuate;
+        rgb.g *= gAttenuate;
+        rgb.b *= bAttenuate;
 
         return rgb;
     }
@@ -126,7 +146,11 @@ class Camera
 
         ray->setStart(start);
         ray->setDirection(direction);
+        raySceneTest(ray, scene);
+    }
 
+    void raySceneTest(Ray *ray, Scene *scene)
+    {
         for(size_t i = 0; i < scene->spheres.size(); i++)
         {
             ray->sphereTest(&scene->spheres[i]);
