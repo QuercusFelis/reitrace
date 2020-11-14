@@ -89,7 +89,7 @@ class Camera
         {
             material = ray->getFace()->getMaterial();
             normal = ((Model *)object)->getNormal(ray->getFace());
-            if(normal.dot(*ray->getDirection()))
+            if(normal.dot(*ray->getDirection()) > 1)
                 normal = -1 * normal;
         }
         rgb.r += material->ambient[0] * scene->ambientLight[0];
@@ -102,10 +102,10 @@ class Camera
             Vector3d toLt = (lt.coords - *ray->getBestPoint()).normalized();
             double NdotL = normal.dot(toLt);
             //shadow detection
-            Ray shadowDetect(toLt, *ray->getBestPoint());
+            Ray shadowDetect(*ray->getBestPoint(), toLt);
             raySceneTest(&shadowDetect, scene);
             if(shadowDetect.intersects())
-                lightOccluded = (lt.coords - *ray->getBestPoint()).dot(lt.coords - *ray->getBestPoint()) < (lt.coords - *shadowDetect.getBestPoint()).dot(lt.coords - *shadowDetect.getBestPoint());
+                lightOccluded = (lt.coords - *ray->getBestPoint()).dot(lt.coords - *ray->getBestPoint()) > (*shadowDetect.getBestPoint() - *ray->getBestPoint()).dot(*shadowDetect.getBestPoint() - *ray->getBestPoint());
             if(NdotL > 0 && !lightOccluded)
             {
                rgb.r += material->diffuse[0] * lt.emittance[0] * NdotL;

@@ -23,42 +23,45 @@ static std::vector<Material> materialConstruct(std::string &fileName)
         // split each line for easier parsing
         tokens.clear();
         splitString(newline, tokens);
-
-        // if it's a new material
-        if(!tokens.front().compare("newmtl"))
+        
+        if(tokens.size() != 0)
         {
-            Material m;
-            m.name = tokens.at(1);
-            out.push_back(m);
-        }
-        // parse material properties
-        else if(!tokens.front().compare("Ns"))
-        {
-            out.back().alpha = stod(tokens.at(1));
-        }
-        else if(!tokens.front().compare("Ka"))
-        {
-            for(int i = 1; i <= 3; i++)
-                out.back().ambient[i] = stod(tokens.at(i));
-        }
-        else if(!tokens.front().compare("Kd"))
-        {
-            for(int i = 1; i <= 3; i++)
-                out.back().diffuse[i] = stod(tokens.at(i));
-        }
-        else if(!tokens.front().compare("Ks"))
-        {
-            for(int i = 1; i <= 3; i++)
-                out.back().specular[i] = stod(tokens.at(i));
-        }
-        else if(!tokens.front().compare("Ke"))
-        {
-            for(int i = 1; i <= 3; i++)
-                out.back().attenuation[i] = stod(tokens.at(i));
-        }
-        else if(!tokens.front().compare("illum"))
-        {
-            out.back().illumModel = stoi(tokens.at(1));
+            // if it's a new material
+            if(!tokens.front().compare("newmtl"))
+            {
+                Material m;
+                m.name = tokens.at(1);
+                out.push_back(m);
+            }
+            // parse material properties
+            else if(!tokens.front().compare("Ns"))
+            {
+                out.back().alpha = stod(tokens.at(1));
+            }
+            else if(!tokens.front().compare("Ka"))
+            {
+                for(int i = 1; i <= 3; i++)
+                    out.back().ambient[i-1] = stod(tokens.at(i));
+            }
+            else if(!tokens.front().compare("Kd"))
+            {
+                for(int i = 1; i <= 3; i++)
+                    out.back().diffuse[i-1] = stod(tokens.at(i));
+            }
+            else if(!tokens.front().compare("Ks"))
+            {
+                for(int i = 1; i <= 3; i++)
+                    out.back().specular[i-1] = stod(tokens.at(i));
+            }
+            else if(!tokens.front().compare("Ke"))
+            {
+                for(int i = 1; i <= 3; i++)
+                    out.back().attenuation[i-1] = stod(tokens.at(i));
+            }
+            else if(!tokens.front().compare("illum"))
+            {
+                out.back().illumModel = stoi(tokens.at(1));
+            }
         }
     }
     file.close();

@@ -35,7 +35,7 @@ static Model modelConstruct(std::string &fileName)
         {
             header += newline + "\n";
         }
-        else if(!tokens.front().compare("mttlib"))
+        else if(!tokens.front().compare("mtllib"))
         {
             out.setMaterials(materialConstruct(tokens.at(1)));
         }
