@@ -127,7 +127,7 @@ class Model
 
     Vector3d getNormal(Face *f)
     {
-        return (f->getA(&vertices) - f->getB(&vertices)).cross(f->getA(&vertices) - f->getC(&vertices));
+        return (f->getA(&vertices) - f->getB(&vertices)).cross(f->getA(&vertices) - f->getC(&vertices)).normalized();
     }
 
     Material* getMaterial(std::string name)

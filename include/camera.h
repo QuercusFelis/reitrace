@@ -89,7 +89,7 @@ class Camera
         {
             material = ray->getFace()->getMaterial();
             normal = ((Model *)object)->getNormal(ray->getFace());
-            if(normal.dot(*ray->getDirection()) > 1)
+            if(normal.dot(*ray->getDirection()) > 0)
                 normal = -1 * normal;
         }
         rgb.r += material->ambient[0] * scene->ambientLight[0];
@@ -101,8 +101,8 @@ class Camera
             Light lt = scene->lights.at(i);
             Vector3d toLt = (lt.coords - *ray->getBestPoint()).normalized();
             double NdotL = normal.dot(toLt);
-            //shadow detection
-            Ray shadowDetect(*ray->getBestPoint(), toLt);
+            // shadow detection
+            Ray shadowDetect((*ray->getBestPoint() + toLt * 0.00001), toLt);
             raySceneTest(&shadowDetect, scene);
             if(shadowDetect.intersects())
                 lightOccluded = (lt.coords - *ray->getBestPoint()).dot(lt.coords - *ray->getBestPoint()) > (*shadowDetect.getBestPoint() - *ray->getBestPoint()).dot(*shadowDetect.getBestPoint() - *ray->getBestPoint());
@@ -122,7 +122,7 @@ class Camera
                }
             }
         }
-        if(level > 0)
+        if(level > 0) // recursive reflections
         {
             Pixel rgbR;
             Vector3d Uinv = -1 * *ray->getDirection();
@@ -131,16 +131,13 @@ class Camera
             if(material->illumModel == 2)
                 rgbR = calcLight(scene, &reflectionRay, level-1, 
                         material->attenuation[0], material->attenuation[1], material->attenuation[2]);
-            else //illumModel must = 3, therefore Kr = Ks
+            else // illumModel must = 3, therefore Kr = Ks
                 rgbR = calcLight(scene, &reflectionRay, level-1, 
                         material->specular[0], material->specular[1], material->specular[2]);
-            rgb.r += rgbR.r;
-            rgb.g += rgbR.g;
-            rgb.b += rgbR.b;
+            rgb.r += rgbR.r * rAttenuate;
+            rgb.g += rgbR.g * gAttenuate;
+            rgb.b += rgbR.b * bAttenuate;
         }
-        rgb.r *= rAttenuate;
-        rgb.g *= gAttenuate;
-        rgb.b *= bAttenuate;
 
         return rgb;
     }

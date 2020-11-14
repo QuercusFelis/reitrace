@@ -97,7 +97,7 @@ class Ray
         //is point inside triange and in front of ray?
         if(X[0] >= 0 && X[1] >= 0 && X[2] > 0 && X[0] + X[1] <= 1)
             // is this intersection closer than the previous best?
-            if(X[2] < bestTValue)
+            if(X[2] < bestTValue && X[2] > 0.00001)
             {
                 bestIntersect = true;
                 bestTValue = X[2];
