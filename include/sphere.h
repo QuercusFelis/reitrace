@@ -21,6 +21,11 @@ class Sphere
         material = m;
     }
 
+    Vector3d getNormal(Vector3d point)
+    {
+        return (point - centerpoint).normalized();
+    }
+
     Vector3d* getCenterpoint()
     {
         return &centerpoint;
@@ -31,9 +36,9 @@ class Sphere
         return &radius;
     }
 
-    Material getMaterial()
+    Material *getMaterial()
     {
-        return material;
+        return &material;
     }
 };
 

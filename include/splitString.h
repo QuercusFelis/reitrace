@@ -15,7 +15,8 @@ void splitString(const std::string& str, std::vector<std::string>& cont,
     std::istringstream tokenStream(str); 
     while(std::getline(tokenStream, token, delim))
     {
-        cont.push_back(token);
+        if(token.size() > 0)
+            cont.push_back(token);
     }
 }
 
