@@ -143,7 +143,8 @@ class Camera
                 rgb.g += rgbR.g * gAttenuate;
                 rgb.b += rgbR.b * bAttenuate;
             }
-            if(objType == SPHERE && rAttenuate + gAttenuate + bAttenuate < 3)
+            if(objType == SPHERE && 
+                    material->attenuation[0] + material->attenuation[2] + material->attenuation[2] < 3)
             {
                 Pixel rgbT = {0.0, 0.0, 0.0};
                 Ray refractionRay = Ray::refractExit(
@@ -156,10 +157,10 @@ class Camera
                 {
                     raySceneTest(&refractionRay, scene);
                     rgbT = calcLight(scene, &refractionRay, level-1, 
-                        material->specular[0], material->specular[1], material->specular[2]);
-                    rgb.r += rgbT.r * (1-rAttenuate);
-                    rgb.g += rgbT.g * (1-gAttenuate);
-                    rgb.b += rgbT.b * (1-bAttenuate);
+                        material->attenuation[0], material->attenuation[1], material->attenuation[2]);
+                    rgb.r += rgbT.r * rAttenuate;
+                    rgb.g += rgbT.g * gAttenuate;
+                    rgb.b += rgbT.b * bAttenuate;
                 }
             }
         }
