@@ -14,7 +14,8 @@ struct Material
     double diffuse[3];
     double specular[3];
     double attenuation[3];
-    double alpha;
+    double alpha = 16;
+    double eta = 1;
     int illumModel = ILLUM_NONMIRROR;
 };
 

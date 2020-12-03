@@ -122,7 +122,7 @@ class Camera
                }
             }
         }
-        if(level > 0) // recursive reflections
+        if(level > 0) // recursive reflection & refraction
         {
             Pixel rgbR;
             Vector3d Uinv = -1 * *ray->getDirection();
@@ -137,6 +137,28 @@ class Camera
             rgb.r += rgbR.r * rAttenuate;
             rgb.g += rgbR.g * gAttenuate;
             rgb.b += rgbR.b * bAttenuate;
+            if(objType == SPHERE && rAttenuate + gAttenuate + bAttenuate < 3)
+            {
+                Pixel rgbT = {0.0, 0.0, 0.0};
+                Ray refractionRay = Ray::refractExit(
+                        (Sphere *)ray->getBestObject(), 
+                        *ray->getBestPoint(), 
+                        ray,
+                        material->eta,
+                        1.0);
+                if(*refractionRay.getDirection() != *refractionRay.getStart())
+                {
+                    raySceneTest(&refractionRay, scene);
+                    rgbT = calcLight(scene, &refractionRay, level-1, 
+                        material->specular[0], material->specular[1], material->specular[2]);
+                    rgb.r = rgb.r * rAttenuate;
+                    rgb.b = rgb.b * bAttenuate;
+                    rgb.g = rgb.g * gAttenuate;
+                    rgb.r += rgbT.r * (1-rAttenuate);
+                    rgb.g += rgbT.g * (1-gAttenuate);
+                    rgb.b += rgbT.b * (1-bAttenuate);
+                }
+            }
         }
 
         return rgb;
