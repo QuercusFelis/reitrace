@@ -78,7 +78,7 @@ class Ray
             double b = etaRefract * wDotn - sqrt(radsq);
             out = a * w + b * normal;
         }
-        return out;
+        return out.normalized();
     }
 
     static Ray refractExit(Sphere *sphere, Vector3d point, Ray *w, double etaIn, double etaOut)

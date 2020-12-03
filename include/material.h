@@ -16,7 +16,7 @@ struct Material
     double attenuation[3];
     double alpha = 16;
     double eta = 1;
-    int illumModel = ILLUM_NONMIRROR;
+    int illumModel = ILLUM_MIRROR;
 };
 
 #endif
