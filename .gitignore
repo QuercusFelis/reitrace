@@ -39,4 +39,9 @@ cmake_install.cmake
 compile_commands.json
 *.txt
 *.tar
-render
+raytracer
+*.ppm
+*.png
+*.obj
+*.mtl
+MakeFile
