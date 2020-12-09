@@ -122,21 +122,47 @@ class Camera
                }
             }
         }
-        if(level > 0) // recursive reflections
+        rgb.r *= rAttenuate;
+        rgb.b *= bAttenuate;
+        rgb.g *= gAttenuate;
+        if(level > 0) // recursive reflection & refraction
         {
-            Pixel rgbR;
-            Vector3d Uinv = -1 * *ray->getDirection();
-            Ray reflectionRay(*ray->getBestPoint(), ((2 * normal.dot(Uinv) * normal) - Uinv).normalized());
-            raySceneTest(&reflectionRay, scene);
-            if(material->illumModel == 2)
-                rgbR = calcLight(scene, &reflectionRay, level-1, 
+            if(material->illumModel != ILLUM_NONMIRROR)
+            {
+                Pixel rgbR;
+                Vector3d Uinv = -1 * *ray->getDirection();
+                Ray reflectionRay(*ray->getBestPoint(), ((2 * normal.dot(Uinv) * normal) - Uinv).normalized());
+                raySceneTest(&reflectionRay, scene);
+                if(material->illumModel == 2)
+                    rgbR = calcLight(scene, &reflectionRay, level-1, 
+                            material->attenuation[0], material->attenuation[1], material->attenuation[2]);
+                else // illumModel must = 3, therefore Kr = Ks
+                    rgbR = calcLight(scene, &reflectionRay, level-1, 
+                            material->specular[0], material->specular[1], material->specular[2]);
+                rgb.r += rgbR.r * rAttenuate;
+                rgb.g += rgbR.g * gAttenuate;
+                rgb.b += rgbR.b * bAttenuate;
+            }
+            if(objType == SPHERE && 
+                    material->attenuation[0] + material->attenuation[2] + material->attenuation[2] < 3)
+            {
+                Pixel rgbT = {0.0, 0.0, 0.0};
+                Ray refractionRay = Ray::refractExit(
+                        (Sphere *)ray->getBestObject(), 
+                        *ray->getBestPoint(), 
+                        ray,
+                        material->eta,
+                        1.0);
+                if(*refractionRay.getDirection() != *refractionRay.getStart())
+                {
+                    raySceneTest(&refractionRay, scene);
+                    rgbT = calcLight(scene, &refractionRay, level-1, 
                         material->attenuation[0], material->attenuation[1], material->attenuation[2]);
-            else // illumModel must = 3, therefore Kr = Ks
-                rgbR = calcLight(scene, &reflectionRay, level-1, 
-                        material->specular[0], material->specular[1], material->specular[2]);
-            rgb.r += rgbR.r * rAttenuate;
-            rgb.g += rgbR.g * gAttenuate;
-            rgb.b += rgbR.b * bAttenuate;
+                    rgb.r += rgbT.r * rAttenuate;
+                    rgb.g += rgbT.g * gAttenuate;
+                    rgb.b += rgbT.b * bAttenuate;
+                }
+            }
         }
 
         return rgb;

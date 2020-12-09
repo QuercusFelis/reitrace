@@ -64,6 +64,36 @@ class Ray
         return dSquared;
     }
 
+    static Vector3d refractTRay(Vector3d w, Vector3d normal, double eta1, double eta2)
+    {
+        Vector3d out;
+        double etaRefract = eta1 / eta2;
+        double a = -1 * etaRefract;
+        double wDotn = w.dot(normal);
+        double radsq = pow(etaRefract, 2) * (pow(wDotn, 2) - 1) + 1;
+        if(radsq < 0)
+            out = Vector3d(0,0,0);
+        else
+        {
+            double b = etaRefract * wDotn - sqrt(radsq);
+            out = a * w + b * normal;
+        }
+        return out.normalized();
+    }
+
+    static Ray refractExit(Sphere *sphere, Vector3d point, Ray *w, double etaIn, double etaOut)
+    {
+        Ray out;
+        Vector3d T1 = refractTRay(*w->getDirection(), (point - *sphere->getCenterpoint()), etaOut, etaIn);
+        if(T1.sum() != 0)
+        {
+            Vector3d exit = point + 2 * (*sphere->getCenterpoint() - point).dot(T1) * T1;
+            Vector3d T2 = refractTRay(-1 * T1, (*sphere->getCenterpoint() - exit).normalized(), etaIn, etaOut);
+            out = Ray(exit, T2);
+        }
+        return out;
+    }
+
     void modelTest(Model *m)
     {
         for(size_t i = 0; i < m->getFaces()->size(); i++)
