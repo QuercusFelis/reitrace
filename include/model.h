@@ -25,29 +25,33 @@ class Face
     Material *material;
     int vertices[3];
     int textures[3] = {-1,-1,-1};
-    int normals[3];
+    Vector3d normal = {0,0,0};
 
   public:
-    Face(Material *m, int verts[3], int texts[3], int norms[3])
+    Face(Material *m, int verts[3], int texts[3])
     {
-        Face(m, verts, norms);
+        Face(m, verts);
         for(int i = 0; i<3; i++)
             textures[i] = (int)texts[i]-1;
     }
 
-    Face(Material *m, int verts[3], int norms[3])
+    Face(Material *m, int verts[3])
     {
         material = m;
         for(int i = 0; i<3; i++)
         {
             vertices[i] = (int)verts[i]-1;
-            normals[i] = (int)norms[i]-1;
         }
     }
 
     void setMaterial(Material *m)
     {
         material = m;
+    }
+
+    void setNormal(Vector3d *norm)
+    {
+        normal = *norm;
     }
 
     Material* getMaterial()
@@ -78,6 +82,11 @@ class Face
                               verts->operator()(2,vertices[2])/verts->operator()(3,vertices[2]));
         return C;
     }
+    
+    Vector3d getNormal()
+    {
+        return normal;
+    }
 
     int getVertIndex(int i)
     {
@@ -88,11 +97,6 @@ class Face
     {
         return textures[i]+1;
     }
-
-    int getNormalIndex(int i)
-    {
-        return normals[i]+1;
-    }
 };
 
 class Model
@@ -102,18 +106,17 @@ class Model
     std::vector<Material> materials;
     std::string header;
     MatrixXd vertices;
-    std::vector<double> vertexNormals;
-    std::vector<Line> lines;
+    std::vector<Vector3d> vertexNormals;
     std::vector<Face> faces;
+    std::vector<std::vector<int>> vertexParents;
 
   public:
     Model(){}
 
-    Model(MatrixXd verts, std::vector<double> vns, std::vector<Line> edges, std::vector<Face> sides, bool smoothShaded)
+    Model(MatrixXd verts, std::vector<Vector3d> vns, std::vector<Face> sides, bool smoothShaded)
     {
         vertices = verts;
         vertexNormals = vns;
-        lines = edges;
         faces = sides;
         smooth = smoothShaded;
     }
@@ -127,7 +130,23 @@ class Model
 
     Vector3d getNormal(Face *f)
     {
-        return (f->getA(&vertices) - f->getB(&vertices)).cross(f->getA(&vertices) - f->getC(&vertices)).normalized();
+        Vector3d normal = f->getNormal();
+        if(normal.dot(normal) == 0)
+        {
+            normal = (f->getA(&vertices) - f->getB(&vertices)).cross(f->getA(&vertices) - f->getC(&vertices)).normalized();
+            f->setNormal(&normal);
+        }
+        return normal;
+    }
+
+    Vector3d getNormal(Face *f, double beta, double gamma)
+    {
+            if(!smooth) 
+                return getNormal(f);
+            else
+                return (1-beta-gamma) * vertexNormals.at(f->getVertIndex(0)-1) + 
+                        beta * vertexNormals.at(f->getVertIndex(1)-1) +
+                        gamma * vertexNormals.at(f->getVertIndex(2)-1);
     }
 
     Material* getMaterial(std::string name)
@@ -159,14 +178,23 @@ class Model
         vertices = verts;
     }
 
-    void setVertexNormals(std::vector<double> vns)
+    void setVertexNormals()
     {
-        vertexNormals = vns;
+        for(size_t i = 0; i < vertexParents.size(); i++)
+        {
+            Vector3d normal;
+            for(size_t j = 0; j < vertexParents.at(i).size(); j++)
+            {
+                normal += getNormal(&faces.at(vertexParents.at(i).at(j)));
+            }
+            normal /= vertexParents.at(i).size();
+            vertexNormals.push_back(normal);
+        }
     }
 
-    void setLines(std::vector<Line> edges)
+    void setVertexParents(std::vector<std::vector<int>> vps)
     {
-        lines = edges;
+        vertexParents = vps;
     }
 
     void setFaces(std::vector<Face> sides)
@@ -189,14 +217,14 @@ class Model
         return &vertices;
     }
 
-    std::vector<double>* getVertexNormals()
+    std::vector<Vector3d>* getVertexNormals()
     {
         return &vertexNormals;
     }
 
-    std::vector<Line>* getLines()
+    std::vector<std::vector<int>>* getVertexParents()
     {
-        return &lines;
+        return &vertexParents;
     }
 
     std::vector<Face>* getFaces()

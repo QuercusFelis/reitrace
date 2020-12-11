@@ -12,23 +12,25 @@
 class Ray
 {
     private:
+    int objType;
+    double bestTValue;
+    double beta;
+    double gamma;
+    void *bestObject;
+    Face *bestFace;
+
     Vector3d start;
     Vector3d direction;
-
-    double bestTValue;
-    void *bestObject;
     Vector3d bestPoint;
-    Face *bestFace;
-    int objType;
 
     public:
     Ray()
     {
-        start = Vector3d(0,0,0);
-        direction = Vector3d(0,0,0);
         bestTValue = INFINITY;
         bestObject = NULL;
         bestFace = NULL;
+        start = Vector3d(0,0,0);
+        direction = Vector3d(0,0,0);
         bestPoint = Vector3d(0,0,0);
     }
     
@@ -130,6 +132,8 @@ class Ray
             if(X[2] < bestTValue && X[2] > 0.00001)
             {
                 bestIntersect = true;
+                beta = X[0];
+                gamma = X[1];
                 bestTValue = X[2];
                 bestPoint = start + X[2] * direction;
                 bestFace = f;
@@ -141,6 +145,16 @@ class Ray
     bool intersects()
     {
         return bestObject != NULL;
+    }
+
+    double getBeta()
+    {
+        return beta;
+    }
+
+    double getGamma()
+    {
+        return gamma;
     }
 
     Vector3d* getBestPoint()

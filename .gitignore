@@ -44,4 +44,4 @@ raytracer
 *.png
 *.obj
 *.mtl
-MakeFile
+Makefile

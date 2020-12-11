@@ -88,7 +88,7 @@ class Camera
         if(objType == MODEL)
         {
             material = ray->getFace()->getMaterial();
-            normal = ((Model *)object)->getNormal(ray->getFace());
+            normal = ((Model *)object)->getNormal(ray->getFace(), ray->getBeta(), ray->getGamma());
             if(normal.dot(*ray->getDirection()) > 0)
                 normal = -1 * normal;
         }
