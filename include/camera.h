@@ -88,7 +88,7 @@ class Camera
         if(objType == MODEL)
         {
             material = ray->getFace()->getMaterial();
-            normal = ((Model *)object)->getNormal(ray->getFace());
+            normal = ((Model *)object)->getNormal(ray->getFace(), ray->getBeta(), ray->getGamma());
             if(normal.dot(*ray->getDirection()) > 0)
                 normal = -1 * normal;
         }
@@ -108,9 +108,21 @@ class Camera
                 lightOccluded = (lt.coords - *ray->getBestPoint()).dot(lt.coords - *ray->getBestPoint()) > (*shadowDetect.getBestPoint() - *ray->getBestPoint()).dot(*shadowDetect.getBestPoint() - *ray->getBestPoint());
             if(NdotL > 0 && !lightOccluded)
             {
-               rgb.r += material->diffuse[0] * lt.emittance[0] * NdotL;
-               rgb.g += material->diffuse[1] * lt.emittance[1] * NdotL;
-               rgb.b += material->diffuse[2] * lt.emittance[2] * NdotL;
+               if(material->textured)
+               {
+                   Pixel tex = ((Model *) object)->getTextureColor(ray->getFace(), 
+                         ray->getBeta(), 
+                         ray->getGamma());
+                   rgb.r += tex.r * lt.emittance[0] * NdotL;
+                   rgb.g += tex.g * lt.emittance[1] * NdotL;
+                   rgb.b += tex.b * lt.emittance[2] * NdotL;
+               }
+               else
+               {
+                   rgb.r += material->diffuse[0] * lt.emittance[0] * NdotL;
+                   rgb.g += material->diffuse[1] * lt.emittance[1] * NdotL;
+                   rgb.b += material->diffuse[2] * lt.emittance[2] * NdotL;
+               }
                Vector3d toC = (*ray->getStart() - *ray->getBestPoint()).normalized();
                Vector3d spR = ((2 * NdotL * normal) - toLt).normalized();
                double CdotR = toC.dot(spR);

@@ -6,6 +6,7 @@
 #define ILLUM_MIRROR 3
 
 #include <string>
+#include "image.h"
 
 struct Material
 {
@@ -17,6 +18,8 @@ struct Material
     double alpha = 16;
     double eta = 1;
     int illumModel = ILLUM_MIRROR;
+    bool textured = false;
+    Image texture = Image();
 };
 
 #endif

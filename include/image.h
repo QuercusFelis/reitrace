@@ -17,8 +17,8 @@ class Image
 {
     private:
     // resolution
-    int width;
-    int height;
+    int width = 0;
+    int height = 0;
 
     // pixel value arrays
     std::vector<Pixel> pixels;
@@ -55,13 +55,16 @@ class Image
         // write to file
         for(int i = 0; i < width*height; i++)
         {
-            file << (int)(255*pixels[i].r) << " " 
-                 << (int)(255*pixels[i].g) << " " 
-                 << (int)(255*pixels[i].b) << " ";
-            if(!width%(i+1))
-                file << "\n";
+            file << (int)(255*pixels[i].r) << "\n" 
+                 << (int)(255*pixels[i].g) << "\n" 
+                 << (int)(255*pixels[i].b) << "\n";
         }
         return true;
+    }
+
+    void setPixel(int x, int y, Pixel pixel)
+    {
+        pixels.at(y*width+x) = pixel;
     }
 
     int getWidth()
@@ -74,9 +77,9 @@ class Image
         return height;
     }
 
-    void setPixel(int x, int y, Pixel pixel)
+    Pixel getPixel(int x, int y)
     {
-        pixels.at(y*width+x) = pixel;
+        return pixels.at(y*width+x);
     }
 };
 
