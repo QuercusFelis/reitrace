@@ -23,24 +23,18 @@ class Face
 {
   private:
     Material *material;
-    int vertices[3];
-    int textures[3] = {-1,-1,-1};
+    int vertices[3] = {0,0,0};
+    int textures[3] = {0,0,0};
     Vector3d normal = {0,0,0};
 
   public:
     Face(Material *m, int verts[3], int texts[3])
     {
-        Face(m, verts);
-        for(int i = 0; i<3; i++)
-            textures[i] = (int)texts[i]-1;
-    }
-
-    Face(Material *m, int verts[3])
-    {
         material = m;
         for(int i = 0; i<3; i++)
         {
-            vertices[i] = (int)verts[i]-1;
+            vertices[i] = verts[i]-1;
+            textures[i] = texts[i]-1;
         }
     }
 
@@ -109,6 +103,7 @@ class Model
     std::vector<Vector3d> vertexNormals;
     std::vector<Face> faces;
     std::vector<std::vector<int>> vertexParents;
+    std::vector<std::vector<double>> textureCoords;
 
   public:
     Model(){}
@@ -141,12 +136,13 @@ class Model
 
     Vector3d getNormal(Face *f, double beta, double gamma)
     {
-            if(!smooth) 
-                return getNormal(f);
-            else
-                return (1-beta-gamma) * vertexNormals.at(f->getVertIndex(0)-1) + 
-                        beta * vertexNormals.at(f->getVertIndex(1)-1) +
-                        gamma * vertexNormals.at(f->getVertIndex(2)-1);
+        Vector3d faceNormal = getNormal(f);
+        if(!smooth) 
+            return faceNormal;
+        Vector3d normal = (1-beta-gamma) * vertexNormals.at(f->getVertIndex(0)-1) + 
+                beta * vertexNormals.at(f->getVertIndex(1)-1) +
+                gamma * vertexNormals.at(f->getVertIndex(2)-1);
+        return normal;
     }
 
     Material* getMaterial(std::string name)
@@ -161,6 +157,18 @@ class Model
         }
 
         return out;
+    }
+
+    Pixel getTextureColor(Face *f, double beta, double gamma)
+    {
+        Image *img = &f->getMaterial()->texture;
+        double x = (1-beta-gamma) * textureCoords.at(f->getTextureIndex(0)-1).at(0) +
+             beta * textureCoords.at(f->getTextureIndex(1)-1).at(0) +
+             gamma * textureCoords.at(f->getTextureIndex(2)-1).at(0);
+        double y = (1-beta-gamma) * textureCoords.at(f->getTextureIndex(0)-1).at(1) +
+             beta * textureCoords.at(f->getTextureIndex(1)-1).at(1) +
+             gamma * textureCoords.at(f->getTextureIndex(2)-1).at(1);
+        return img->getPixel((int)(img->getWidth() * x), (int)(img->getHeight() * y));
     }
 
     void setMaterials(std::vector<Material> m)
@@ -187,7 +195,7 @@ class Model
             {
                 normal += getNormal(&faces.at(vertexParents.at(i).at(j)));
             }
-            normal /= vertexParents.at(i).size();
+            normal /= (vertexParents.at(i).size()+1);
             vertexNormals.push_back(normal);
         }
     }
@@ -195,6 +203,11 @@ class Model
     void setVertexParents(std::vector<std::vector<int>> vps)
     {
         vertexParents = vps;
+    }
+
+    void setTextureCoords(std::vector<std::vector<double>> tex)
+    {
+        textureCoords = tex;
     }
 
     void setFaces(std::vector<Face> sides)

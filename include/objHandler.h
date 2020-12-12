@@ -20,6 +20,7 @@ static Model modelConstruct(std::string &fileName)
     std::vector<std::vector<double>> vertices;
     std::vector<Face> faces;
     std::vector<std::vector<int>> vertexParents;
+    std::vector<std::vector<double>> textureCoords;
     Material *activeMaterial = NULL;
 
     // parse file
@@ -52,6 +53,15 @@ static Model modelConstruct(std::string &fileName)
             vertexParents.push_back(std::vector<int>());
             vertices.push_back(vert);
         }
+        // if it's a texture coordinate
+        else if(!tokens.front().compare("vt"))
+        {
+            std::vector<double> coord;
+            coord.push_back(stod(tokens.at(1)));
+            coord.push_back(stod(tokens.at(2)));
+
+            textureCoords.push_back(coord);
+        }
         // set activeMaterial pointer
         else if(!tokens.front().compare("usemtl"))
         {
@@ -62,7 +72,7 @@ static Model modelConstruct(std::string &fileName)
         {
             // split the substrings to isolate integers
             std::vector<std::string> ftokens[3];
-            int verts[3];
+            int verts[3] = {0, 0, 0};
             int texts[3] = {0, 0, 0};
 
             // determine how face is defined in .obj
@@ -86,12 +96,12 @@ static Model modelConstruct(std::string &fileName)
             {
                 verts[i] = std::stoi(ftokens[i].at(0));
                 vertexParents.at(verts[i]-1).push_back(faces.size());
-                if(!format.compare("/") || ftokens[i].at(0).size() == 3)
+                if(!format.compare("/") || ftokens[i].size() == 3)
                     texts[i] = std::stoi(ftokens[i].at(1));
             }
             
             //add to faces
-            faces.push_back(Face(activeMaterial, verts));
+            faces.push_back(Face(activeMaterial, verts, texts));
         }
         // if it has smoothing defined
         else if(!tokens.front().compare("s"))
@@ -103,6 +113,7 @@ static Model modelConstruct(std::string &fileName)
         }
     }
     file.close();
+    std::cout << "Closed " << fileName << "\n";
     // done parsing file
 
     // initialize dynamic matrix to known size and fill
@@ -124,6 +135,7 @@ static Model modelConstruct(std::string &fileName)
     out.setVertices(verticesOut);
     out.setFaces(faces);
     out.setVertexParents(vertexParents);
+    out.setTextureCoords(textureCoords);
     
     return out;
 }
