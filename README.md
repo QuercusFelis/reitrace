@@ -1,5 +1,7 @@
 # Reitrace
 
+A school project to build a working raytracing library from scratch over the course of the semester. Included are several demo programs which make use of the capabilites implemened in each assignment, numbered HW1-HW4. Scenes are defined using text based 'driver' files and allow importing and transforming of .obj models, sphere primatives, and colored lights. Custom materials are also supported and defined within driver files which allow full control over diffusive, specular, and reflective properties of the objects they are applied to, as well as basic texturing of .objs.
+
 ## How to Build
 In the top level directory of this project, simply run 'cmake ./;make'
 
